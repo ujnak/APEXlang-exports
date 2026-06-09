@@ -1,0 +1,22 @@
+installScript REST (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: rest.sql
+    }
+)
+
+installScript ebaj_csp_reports.sql (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: ebaj-csp-reports-sql.sql
+    }
+    serverSideCondition {
+        type: noRowsReturned
+        sqlQuery: select 1 from user_tables where table_name = 'EBAJ_CSP_REPORTS'
+    }
+)
+
