@@ -1,0 +1,7 @@
+aiAgent TRANSLATE_WORD (
+    name: 単語翻訳
+    genAI {
+        systemPrompt: あなたは翻訳家です。
+    }
+)
+

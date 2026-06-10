@@ -1,0 +1,6 @@
+substitution APP_NAME (
+)
+
+substitution G_TRANSLATE_COLLECTION (
+)
+

@@ -1,0 +1,11 @@
+genAIService local-gpt-oss-120b (
+    name: Local GPT-OSS-120B
+    provider: genericOpenaiApiCompatible
+    endpointUrl {
+        url: http://host.docker.internal:1234/v1/chat/completions
+    }
+    advanced {
+        modelName: unsloth/gpt-oss-120b
+    }
+)
+

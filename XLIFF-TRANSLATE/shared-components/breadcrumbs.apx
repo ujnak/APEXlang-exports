@@ -1,0 +1,44 @@
+breadcrumb breadcrumb (
+    name: Breadcrumb
+
+    entry messages (
+        name: Messages
+        pageNumber: 4
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 4
+            }
+        }
+    )
+
+    entry translate (
+        name: Translate
+        pageNumber: 3
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+    entry xliff-files (
+        name: XLIFF Files
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

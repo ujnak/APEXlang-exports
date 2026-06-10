@@ -1,0 +1,476 @@
+page 1 (
+    name: XLIFF Files
+    alias: HOME
+    title: XLIFF Translate
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>To find data enter a search term into the search dialog, or click on the column headings to limit the records returned.</p>
+            
+            <p>You can perform numerous functions by clicking the <strong>Actions</strong> button. This includes selecting the columns that are displayed / hidden and their display sequence, plus numerous data and format functions.  You can also define additional views of the data using the chart, group by, and pivot options.</p>
+            
+            <p>If you want to save your customizations select report, or click download to unload the data. Enter you email address and time frame under subscription to be sent the data on a regular basis.<p>
+            
+            <p>For additional information click Help at the bottom of the Actions menu.</p> 
+            
+            <p>Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+            ```
+    }
+
+    region xliff-files (
+        name: Cwr Xliff Files
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select "ID",
+                       "NAME",
+                       "SOURCE_LANG",
+                       "TARGET_LANG",
+                       sys.dbms_lob.getlength( "XLIFF_RESULT" ) "XLIFF_RESULT",
+                       "XLIFF_RESULT_FILENAME",
+                       "XLIFF_RESULT_MIMETYPE",
+                       "XLIFF_RESULT_CHARSET",
+                       "XLIFF_RESULT_LASTUPD",
+                       sys.dbms_lob.getlength( "XLIFF_SOURCE" ) "XLIFF_SOURCE",
+                       "XLIFF_SOURCE_FILENAME",
+                       "XLIFF_SOURCE_MIMETYPE",
+                       "XLIFF_SOURCE_CHARSET",
+                       "XLIFF_SOURCE_LASTUPD"
+                  from "CWR_XLIFF_FILES"
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 2
+                items: {
+                    P2_ID: \#ID#\
+                }
+                action: resetPagination
+            }
+            linkIcon: <span role="img" aria-label="Edit" class="fa fa-edit" title="Edit"></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: No data found.
+            whenMoreDataFound: The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.
+        }
+        advanced {
+            savedReportMappingIdentifier: 11585466175846357
+        }
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 0
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column NAME (
+            type: link
+            heading {
+                heading: Name
+            }
+            layout {
+                sequence: 2
+            }
+            link {
+                target: {
+                    page: 3
+                    items: {
+                        P3_ID: #ID#
+                    }
+                }
+                linkText: #NAME#
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column SOURCE_LANG (
+            type: plainText
+            heading {
+                heading: Source Lang
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column TARGET_LANG (
+            type: plainText
+            heading {
+                heading: Target Lang
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column XLIFF_RESULT (
+            type: downloadBlob
+            heading {
+                heading: Xliff Result
+            }
+            layout {
+                sequence: 5
+            }
+            blobAttributes {
+                tableName: CWR_XLIFF_FILES
+                blobColumn: XLIFF_RESULT
+                primaryKeyColumn1: ID
+                mimeTypeColumn: XLIFF_RESULT_MIMETYPE
+                filenameColumn: XLIFF_RESULT_FILENAME
+                lastUpdatedColumn: XLIFF_RESULT_LASTUPD
+                charSetColumn: XLIFF_RESULT_CHARSET
+            }
+            source {
+                dataType: NUMBER
+            }
+            columnFilter {
+                type: none
+            }
+            advanced {
+                endUserAlias: E
+            }
+            enableUsersTo {
+                hide: false
+                sort: false
+                filter: false
+                highlight: false
+                controlBreak: false
+                aggregate: false
+                compute: false
+                chart: false
+                groupBy: false
+            }
+        )
+
+        column XLIFF_RESULT_CHARSET (
+            type: plainText
+            heading {
+                heading: Xliff Result Charset
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column XLIFF_RESULT_FILENAME (
+            type: plainText
+            heading {
+                heading: Xliff Result Filename
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column XLIFF_RESULT_LASTUPD (
+            type: plainText
+            heading {
+                heading: Xliff Result Lastupd
+            }
+            layout {
+                sequence: 9
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column XLIFF_RESULT_MIMETYPE (
+            type: plainText
+            heading {
+                heading: Xliff Result Mimetype
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column XLIFF_SOURCE (
+            type: downloadBlob
+            heading {
+                heading: Xliff Source
+            }
+            layout {
+                sequence: 10
+            }
+            blobAttributes {
+                tableName: CWR_XLIFF_FILES
+                blobColumn: XLIFF_SOURCE
+                primaryKeyColumn1: ID
+                mimeTypeColumn: XLIFF_SOURCE_MIMETYPE
+                filenameColumn: XLIFF_SOURCE_FILENAME
+                lastUpdatedColumn: XLIFF_SOURCE_LASTUPD
+                charSetColumn: XLIFF_SOURCE_CHARSET
+            }
+            source {
+                dataType: NUMBER
+            }
+            columnFilter {
+                type: none
+            }
+            advanced {
+                endUserAlias: J
+            }
+            enableUsersTo {
+                hide: false
+                sort: false
+                filter: false
+                highlight: false
+                controlBreak: false
+                aggregate: false
+                compute: false
+                chart: false
+                groupBy: false
+            }
+        )
+
+        column XLIFF_SOURCE_CHARSET (
+            type: plainText
+            heading {
+                heading: Xliff Source Charset
+            }
+            layout {
+                sequence: 13
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column XLIFF_SOURCE_FILENAME (
+            type: plainText
+            heading {
+                heading: Xliff Source Filename
+            }
+            layout {
+                sequence: 11
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column XLIFF_SOURCE_LASTUPD (
+            type: plainText
+            heading {
+                heading: Xliff Source Lastupd
+            }
+            layout {
+                sequence: 14
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        column XLIFF_SOURCE_MIMETYPE (
+            type: plainText
+            heading {
+                heading: Xliff Source Mimetype
+            }
+            layout {
+                sequence: 12
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn NAME (
+                sequence: 1
+            )
+
+            displayColumn SOURCE_LANG (
+                sequence: 2
+            )
+
+            displayColumn TARGET_LANG (
+                sequence: 3
+            )
+
+            displayColumn XLIFF_RESULT (
+                sequence: 4
+            )
+
+            displayColumn XLIFF_SOURCE (
+                sequence: 5
+            )
+
+            sort (
+                column: NAME
+                sort {
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    region xliff-translate (
+        name: XLIFF Translate
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 10
+            region: @xliff-files
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 2
+                clearCache: 2
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @xliff-files
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @xliff-files
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

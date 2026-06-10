@@ -1,0 +1,65 @@
+app XLIFF-TRANSLATE (
+    name: XLIFF Translate
+    genAI {
+        service: @local-gpt-oss-120b
+    }
+    logo {
+        type: text
+        text: XLIFF Translate
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            t-TreeNav--styleA
+            js-navCollapsed--hidden
+        ]
+        list: @navigation-menu
+    }
+    navigationBar {
+        list: @navigation-bar
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apex-accounts
+    }
+    sessionStateProtection {
+        checksumSalt: 41FD5661A39B1FB6B7A24764E8D82916F9EA29D1045CECA0E87CE2D096E8E6B4
+    }
+    runtime {
+        allowFeedback: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: XLIFF Translate
+        }
+    )
+
+    substitution G_TRANSLATE_COLLECTION (
+        value {
+            staticValue: TRANSLATE
+        }
+    )
+
+)
+

@@ -1,0 +1,908 @@
+page 3 (
+    name: Translate
+    alias: TRANSLATE
+    title: Translate
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: #APP_FILES#translate-actions#MIN#.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            apex.actions.add([
+            OPEN_TRANSLATE_DIALOG
+            ,CLOSE_TRANSLATE_DIALOG
+            ]);
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText:
+            ```html
+            <p>You can insert, update, and delete data directly within this interactive grid.<br>
+              Insert a new row by clicking the Add Row button.<br>
+              Double click into a cell, or click the <strong>Edit</strong> button to update data values, similar to editing data in a spreadsheet.</p>
+            
+            <p>Use the Row Actions menu ( <span class="fa fa-bars" aria-hidden="true"></span> ) at the top of the report to duplicate, delete, refresh or revert selected rows.<br> 
+              Use the Row Actions menu on individual rows to also access the single row view or add a new row.</p>
+            
+            <p>To find data enter a search term into the search dialog, or click on the column headings to limit the records returned.</p>
+            
+            <p>You can perform numerous functions by clicking the <strong>Actions</strong> button. This includes selecting the columns that are displayed / hidden and their display sequence, plus numerous data and format functions.  You can also define an additional view of the data using the chart option.</p>
+            
+            <p>If you want to save your customizations select report, or click download to unload the data.<p>
+            
+            <p>For additional information click Help at the bottom of the Actions menu.</p> 
+            
+            <p>Click the <strong>Reset</strong> button to reset the interactive grid back to the default settings.</p>
+            ```
+    }
+
+    region ai-translate (
+        name: AI Translate
+        type: staticContent
+        layout {
+            sequence: 90
+            slot: dialogsDrawersAndPopups
+        }
+        appearance {
+            template: @/inline-dialog
+            templateOptions: [
+                #DEFAULT#
+                js-dialog-size600x400
+            ]
+        }
+        advanced {
+            htmlDomId: TRANSLATE
+        }
+    )
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 20
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region translate (
+        name: Translate
+        type: interactiveGrid
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                SELECT
+                    seq_id
+                    ,c001 as "ID"
+                    ,c002 as "SOURCE_TEXT"
+                    ,c003 as "TARGET_TEXT"
+                from apex_collections
+                where collection_name = :G_TRANSLATE_COLLECTION
+                ```
+        }
+        layout {
+            sequence: 80
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        advanced {
+            htmlDomId: IGTRANS
+        }
+        edit {
+            enabled: true
+            allowedOperations: update
+        }
+        toolbar {
+            controls: [
+                searchCol
+                searchField
+                actionsMenu
+                resetButton
+            ]
+        }
+        download {
+            formats: [
+                csv
+                html
+                excel
+                pdf
+            ]
+        }
+        advanced {
+            savedReportMappingIdentifier: 11595402450846374
+        }
+
+        savedReport primary (
+            visibility: primary
+            view {
+                default: grid
+            }
+            singleRowView {
+                displayedColumns: true
+            }
+
+            displayColumn (
+                column: @APEX$ROW_ACTION
+                layout {
+                    sequence: 0
+                }
+            )
+
+            displayColumn (
+                column: @SEQ_ID
+                layout {
+                    sequence: 1
+                }
+            )
+
+            displayColumn (
+                column: @ID
+                layout {
+                    sequence: 2
+                }
+            )
+
+            displayColumn (
+                column: @SOURCE_TEXT
+                layout {
+                    sequence: 3
+                }
+            )
+
+            displayColumn (
+                column: @TARGET_TEXT
+                layout {
+                    sequence: 4
+                }
+            )
+
+        )
+
+        column APEX$ROW_ACTION (
+            type: actionsMenu
+            layout {
+                sequence: 20
+            }
+            config {
+                buildOption: @commented-out
+            }
+        )
+
+        column APEX$ROW_SELECTOR (
+            type: rowSelector
+            layout {
+                sequence: 10
+            }
+            config {
+                buildOption: @commented-out
+            }
+        )
+
+        column ID (
+            type: displayOnly
+            heading {
+                heading: Id
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                databaseColumn: ID
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column SEQ_ID (
+            type: link
+            heading {
+                heading: Seq Id
+                alignment: end
+            }
+            layout {
+                sequence: 30
+                columnAlignment: end
+            }
+            link {
+                target: {
+                    type: url
+                    url: #action$open-translate-dialog?id=&SEQ_ID.&id_item=P3_GID&source_item=P3_SOURCE_TEXT&target_item=P3_TARGET_TEXT
+                }
+                linkText: <span class="fa fa-edit" aria-hidden="true"></span>
+            }
+            source {
+                databaseColumn: SEQ_ID
+                dataType: number
+                primaryKey: true
+            }
+            columnFilter {
+                lovType: none
+            }
+            exportPrinting {
+                includeInExportPrint: false
+            }
+        )
+
+        column SOURCE_TEXT (
+            type: displayOnly
+            heading {
+                heading: Source Text
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                databaseColumn: SOURCE_TEXT
+                dataType: varchar2
+                queryOnly: true
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        column TARGET_TEXT (
+            type: textField
+            heading {
+                heading: Target Text
+            }
+            layout {
+                sequence: 60
+            }
+            validation {
+                maxLength: 4000
+            }
+            source {
+                databaseColumn: TARGET_TEXT
+                dataType: varchar2
+            }
+            columnFilter {
+                performanceImpactingOperators: [
+                    contains
+                    startsWith
+                    caseInsensitive
+                    regexp
+                ]
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+    )
+
+    pageItem P3_GID (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 10
+            region: @ai-translate
+            slot: regionBody
+        }
+    )
+
+    pageItem P3_ID (
+        type: selectList
+        label {
+            label: XLIFF Name
+            alignment: left
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery: select name, id from cwr_xliff_files where id = :P3_ID
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 50
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P3_SOURCE_LANG (
+        type: displayOnly
+        label {
+            label: Source Lang
+            alignment: left
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 60
+            slot: body
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P3_SOURCE_TEXT (
+        type: textarea
+        label {
+            label: Source Text
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            region: @ai-translate
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+    )
+
+    pageItem P3_TARGET_LANG (
+        type: displayOnly
+        label {
+            label: Target Lang
+            alignment: left
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 70
+            slot: body
+            alignment: left
+            startNewRow: false
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P3_TARGET_TEXT (
+        type: textarea
+        label {
+            label: Target Text
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @ai-translate
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+    )
+
+    button apply (
+        buttonName: APPLY
+        label: Apply
+        layout {
+            sequence: 50
+            region: @ai-translate
+            slot: regionBody
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+        advanced {
+            customAttributes: data-action="#action$close-translate-dialog?id_item=P3_GID&target_item=P3_TARGET_TEXT"
+        }
+    )
+
+    button batch-translate (
+        buttonName: BATCH_TRANSLATE
+        label: Batch Translate
+        layout {
+            sequence: 40
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 60
+            region: @ai-translate
+            slot: regionBody
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button load-from-result (
+        buttonName: LOAD_FROM_RESULT
+        label: Load From Result
+        layout {
+            sequence: 30
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button load-from-source (
+        buttonName: LOAD_FROM_SOURCE
+        label: Load From Source
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button store-as-result (
+        buttonName: STORE_AS_RESULT
+        label: Store As Result
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button translate (
+        buttonName: TRANSLATE
+        label: Translate
+        layout {
+            sequence: 40
+            region: @ai-translate
+            slot: regionBody
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-execute-plsql-code (
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    declare
+                        l_prompt   clob;
+                        l_request  clob;
+                        l_response clob;
+                        l_json     json_object_t;
+                    begin
+                        l_prompt := '日本語の単語「' || :P3_SOURCE_TEXT || '」を' ||
+                            case :P3_TARGET_LANG when 'en' then '英語' when 'zh-cn' then '簡体中国語' when 'ko' then '韓国語' else '日本語' end
+                            || 'に翻訳してください。¥n出力は以下の形式のJSONで返してください。¥n出力はJSONドキュメントだけを返してください。¥n
+                    {
+                        "source_text": "翻訳対象の単語",
+                        "source_lang": "翻訳元の言語（デフォルトはja）",
+                        "target_lang": "翻訳先の言語",
+                        "target_text": "翻訳された単語"
+                    }';
+                        /* AIへ送信するメッセージ */
+                        select json_object(
+                            key 'source_text' value :P3_SOURCE_TEXT,
+                            key 'source_lang' value 'ja',
+                            key 'target_lang' value :P3_TARGET_LANG
+                        ) into l_request from dual;
+                        apex_debug.info(l_request);
+                        l_response := apex_ai.generate(
+                            p_agent_static_id => 'TRANSLATE_WORD'
+                            ,p_prompt => l_prompt
+                        );
+                        apex_debug.info(l_response);
+                        l_json := json_object_t.parse(l_response);
+                        :P3_TARGET_TEXT := l_json.get_string('target_text');
+                    end;
+                    ```
+                itemsToSubmit: [
+                    P3_SOURCE_TEXT
+                    P3_SOURCE_LANG
+                    P3_TARGET_LANG
+                ]
+                itemsToReturn: P3_TARGET_TEXT
+                showProcessing: true
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction close-dialog-as-cancel (
+        name: Close Dialog as Cancel
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-close-region (
+            action: closeRegion
+            affectedElements {
+                selectionType: region
+                region: @ai-translate
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process batch-translate (
+        name: Batch Translate
+        type: invokeApi
+        invoke {
+            package: CWR_UTIL
+            procedureOrFunction: BATCH_TRANSLATE
+        }
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 8965062634181430
+        }
+        serverSideCondition {
+            whenButtonPressed: @batch-translate
+        }
+
+        parameter p_collection_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: G_TRANSLATE_COLLECTION
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_source_lang (
+            value {
+                type: item
+                item: P3_SOURCE_LANG
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_target_lang (
+            value {
+                type: item
+                item: P3_TARGET_LANG
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+    process load-from-result (
+        name: Load From Result
+        type: invokeApi
+        invoke {
+            package: CWR_UTIL
+            procedureOrFunction: LOAD_FROM_RESULT
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 8964503123181425
+        }
+        serverSideCondition {
+            whenButtonPressed: @load-from-result
+        }
+
+        parameter p_collection_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: G_TRANSLATE_COLLECTION
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_id (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: P3_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_source_lang (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P3_SOURCE_LANG
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_target_lang (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P3_TARGET_LANG
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    process load-from-source (
+        name: Load From Source
+        type: invokeApi
+        invoke {
+            package: CWR_UTIL
+            procedureOrFunction: LOAD_FROM_SOURCE
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 8963710617181417
+        }
+        serverSideCondition {
+            whenButtonPressed: @load-from-source
+        }
+
+        parameter p_collection_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: G_TRANSLATE_COLLECTION
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_id (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: P3_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_source_lang (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P3_SOURCE_LANG
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_target_lang (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P3_TARGET_LANG
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+    )
+
+    process store-as-result (
+        name: Store As Result
+        type: invokeApi
+        invoke {
+            package: CWR_UTIL
+            procedureOrFunction: STORE_AS_RESULT
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 8964272204181422
+        }
+        serverSideCondition {
+            whenButtonPressed: @store-as-result
+        }
+
+        parameter p_collection_name (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: G_TRANSLATE_COLLECTION
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_id (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: P3_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process translate-save-interactive-grid-data (
+        name: Translate - Save Interactive Grid Data
+        type: interactiveGridAutoRowProcessing
+        editableRegion: @translate
+        target {
+            targetType: plsqlCode
+            dmlPlsqlCode:
+                ```plsql
+                -- begin
+                -- 対話グリッドで許可しているのは編集のみなのでROW_STATUSの確認は不要。
+                --    if :APEX$ROW_STATUS = 'U' then
+                        apex_collection.update_member_attribute(
+                            p_collection_name => :G_TRANSLATE_COLLECTION
+                            , p_seq => :SEQ_ID
+                            , p_attr_number => 3
+                            , p_attr_value => :TARGET_TEXT   
+                        );
+                --    end if;
+                -- end;
+                ```
+        }
+        lockRow {
+            preventLostUpdates: false
+            lockRow: false
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 11602242846846382
+        }
+        serverSideCondition {
+            whenButtonPressed: @store-as-result
+        }
+    )
+
+)
+
