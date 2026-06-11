@@ -1,0 +1,7 @@
+aiAgent chat (
+    name: chat
+    genAI {
+        systemPrompt: あなたは親切な話し相手です。
+    }
+)
+

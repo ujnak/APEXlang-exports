@@ -1,0 +1,302 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: Sample Terminal Emulator
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: [
+            https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/lib/xterm.min.js
+            https://cdn.jsdelivr.net/npm/@xterm/addon-fit/lib/addon-fit.js
+        ]
+        functionAndGlobalVariableDeclaration:
+            ```javascript-browser
+            const term = new Terminal({
+                cursorBlink: true
+            });
+            const fitAddon = new FitAddon.FitAddon();
+            const terminalElement = document.getElementById("terminal");
+            term.loadAddon(fitAddon);
+            
+            term.open(terminalElement);
+            fitAddon.fit();
+            
+            term.write("prompt> ");
+            
+            let buffer = "";
+            let isComposing = false;
+            const graphemeSegmenter =
+                typeof Intl !== "undefined" && Intl.Segmenter
+                    ? new Intl.Segmenter(undefined, { granularity: "grapheme" })
+                    : null;
+            
+            function splitLastGrapheme(value) {
+                if (!value) {
+                    return {
+                        head: "",
+                        tail: ""
+                    };
+                }
+            
+                if (!graphemeSegmenter) {
+                    const chars = Array.from(value);
+                    const tail = chars.pop() || "";
+                    return {
+                        head: chars.join(""),
+                        tail
+                    };
+                }
+            
+                const segments = Array.from(graphemeSegmenter.segment(value));
+                const tail = segments[segments.length - 1].segment;
+                return {
+                    head: value.slice(0, value.length - tail.length),
+                    tail
+                };
+            }
+            
+            function isCombiningCodePoint(codePoint) {
+                return (
+                    (codePoint >= 0x0300 && codePoint <= 0x036f) ||
+                    (codePoint >= 0x1ab0 && codePoint <= 0x1aff) ||
+                    (codePoint >= 0x1dc0 && codePoint <= 0x1dff) ||
+                    (codePoint >= 0x20d0 && codePoint <= 0x20ff) ||
+                    (codePoint >= 0xfe20 && codePoint <= 0xfe2f)
+                );
+            }
+            
+            function isWideCodePoint(codePoint) {
+                return (
+                    (codePoint >= 0x1100 && codePoint <= 0x115f) ||
+                    (codePoint >= 0x2329 && codePoint <= 0x232a) ||
+                    (codePoint >= 0x2e80 && codePoint <= 0xa4cf) ||
+                    (codePoint >= 0xac00 && codePoint <= 0xd7a3) ||
+                    (codePoint >= 0xf900 && codePoint <= 0xfaff) ||
+                    (codePoint >= 0xfe10 && codePoint <= 0xfe19) ||
+                    (codePoint >= 0xfe30 && codePoint <= 0xfe6f) ||
+                    (codePoint >= 0xff00 && codePoint <= 0xff60) ||
+                    (codePoint >= 0xffe0 && codePoint <= 0xffe6)
+                );
+            }
+            
+            function getCellWidth(value) {
+                let width = 0;
+            
+                for (const char of value) {
+                    const codePoint = char.codePointAt(0);
+            
+                    if (isCombiningCodePoint(codePoint)) {
+                        continue;
+                    }
+            
+                    width += isWideCodePoint(codePoint) ? 2 : 1;
+                }
+            
+                return Math.max(width, 1);
+            }
+            
+            function eraseLastBufferedCharacter() {
+                const split = splitLastGrapheme(buffer);
+            
+                if (!split.tail) {
+                    return;
+                }
+            
+                const cellWidth = getCellWidth(split.tail);
+                buffer = split.head;
+                term.write("\b".repeat(cellWidth) + " ".repeat(cellWidth) + "\b".repeat(cellWidth));
+            }
+            
+            terminalElement.addEventListener("compositionstart", () => {
+                isComposing = true;
+            });
+            
+            terminalElement.addEventListener("compositionend", () => {
+                isComposing = false;
+            });
+            
+            terminalElement.addEventListener("compositioncancel", () => {
+                isComposing = false;
+            });
+            
+            term.onData(function(data) {
+            
+                if (data === "\r") {
+                    term.writeln("\r\n");
+            
+                    apex.server.process(
+                        'CHAT',
+                        {
+                            p_clob_01: buffer
+                        },
+                        {
+                            success: function(data) {
+                                term.write(data.response);
+                                term.writeln("\r\n");
+                                term.write("prompt> ");
+                            },
+                            error: function(xfr, status, errorThrown) {
+                                apex.debug.error("エラー:", status, errorThrown);
+                            }
+                        }
+                    );
+            
+                    buffer = "";
+                }
+                else if (data === "\u007f" || data === "\b") {
+                    if (!isComposing) {
+                        eraseLastBufferedCharacter();
+                    }
+                }
+                else {
+                    buffer += data;
+                    term.write(data);
+                }
+            
+            });
+            
+            window.addEventListener('resize', () => {
+                fitAddon.fit();
+            });
+            ```
+    }
+    css {
+        fileUrls: https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/css/xterm.min.css
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region sample-terminal-emulator (
+        name: Sample Terminal Emulator
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    region terminal (
+        name: Terminal
+        type: staticContent
+        source {
+            htmlCode: <div id="terminal"></div>
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    process chat (
+        name: CHAT
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_collection_name constant varchar2(30) := 'CHAT_HISTORY';
+                    l_prompt          clob;
+                    l_command         varchar2(4000);
+                    l_response        clob;
+                    l_messages        apex_ai.t_chat_messages := apex_ai.c_chat_messages;
+                    l_message_idx     pls_integer := 0;
+                begin
+                    l_prompt := apex_application.g_clob_01;
+                    l_command := lower(trim(dbms_lob.substr(l_prompt, 4000, 1)));
+                    apex_debug.info(l_prompt);
+                    
+                    if not apex_collection.collection_exists(l_collection_name) then
+                        apex_collection.create_collection(l_collection_name);
+                    end if;
+                    
+                    if l_command = '/new' then
+                        apex_collection.truncate_collection(l_collection_name);
+                        
+                        apex_json.open_object;
+                        apex_json.write('response', '新しいチャットを開始しました。');
+                        apex_json.close_object;
+                        return;
+                    end if;
+                    
+                    for r in (
+                        select c001 chat_role
+                             , c002 message_type
+                             , clob001 message
+                          from apex_collections
+                         where collection_name = l_collection_name
+                         order by seq_id
+                    ) loop
+                        l_message_idx := l_message_idx + 1;
+                        l_messages(l_message_idx).chat_role := r.chat_role;
+                        l_messages(l_message_idx).message_type := r.message_type;
+                        l_messages(l_message_idx).message := r.message;
+                    end loop;
+                    
+                    l_response := apex_ai.chat(
+                        p_agent_static_id => 'chat'
+                        ,p_prompt => l_prompt
+                        ,p_messages => l_messages
+                    );
+                    
+                    apex_collection.truncate_collection(l_collection_name);
+                    
+                    l_message_idx := l_messages.first;
+                    while l_message_idx is not null loop
+                        if l_messages(l_message_idx).chat_role in (
+                            apex_ai.c_role_system
+                            ,apex_ai.c_role_assistant
+                            ,apex_ai.c_role_user
+                        )
+                        and l_messages(l_message_idx).message is not null then
+                            apex_collection.add_member(
+                                p_collection_name => l_collection_name
+                                ,p_c001 => l_messages(l_message_idx).chat_role
+                                ,p_c002 => nvl(
+                                    l_messages(l_message_idx).message_type
+                                    ,apex_ai.c_chat_message_type_text
+                                )
+                                ,p_clob001 => l_messages(l_message_idx).message
+                            );
+                        end if;
+                        
+                        l_message_idx := l_messages.next(l_message_idx);
+                    end loop;
+                    
+                    apex_debug.info(l_response);
+                    apex_json.open_object;
+                    apex_json.write('response', l_response);
+                    apex_json.close_object;
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 13855845878427606
+        }
+    )
+
+)
