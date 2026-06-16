@@ -1,0 +1,408 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: Get Table Info by APEX_DB_DICTIONARY
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region get-table-info-by-apex-db-dictionary (
+        name: Get Table Info by APEX_DB_DICTIONARY
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    pageItem P1_DOCUMENT (
+        type: richTextEditor
+        label {
+            label: Document
+            alignment: left
+        }
+        settings {
+            minHeight: 180
+        }
+        layout {
+            sequence: 110
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        sessionState {
+            dataType: clob
+        }
+    )
+
+    pageItem P1_FORMAT (
+        type: selectList
+        label {
+            label: p_format
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC:MARKDOWN;1,TEXT;2
+            displayExtraValues: false
+            displayNullValue: false
+        }
+        layout {
+            sequence: 80
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+    )
+
+    pageItem P1_INCLUDE_ANNOTATIONS (
+        type: switch
+        label {
+            label: p_include_annotations
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_INCLUDE_COMMENTS (
+        type: switch
+        label {
+            label: p_include_comments
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_INCLUDE_CONSTRAINTS (
+        type: switch
+        label {
+            label: p_include_constraints
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_INCLUDE_DOMAINS (
+        type: switch
+        label {
+            label: p_include_domains
+            alignment: left
+        }
+        layout {
+            sequence: 60
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_INCLUDE_INDEXES (
+        type: switch
+        label {
+            label: p_include_indexes
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_INCLUDE_VIRTUAL_COLUMNS (
+        type: switch
+        label {
+            label: p_virtual_columns
+            alignment: left
+        }
+        layout {
+            sequence: 70
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_TABLE_NAMES (
+        type: textField
+        label {
+            label: p_table_names
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    button download (
+        buttonName: DOWNLOAD
+        label: Download
+        layout {
+            sequence: 100
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-download (
+            action: download
+            source {
+                sqlQuery:
+                    ```sql
+                    select 
+                        :P1_DOCUMENT content
+                        ,case when :P1_FORMAT = 1 then 'table.md'      else 'table.txt'  end filename
+                        ,case when :P1_FORMAT = 1 then 'text/markdown' else 'text/plain' end mimetype
+                    from dual
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button generate (
+        buttonName: GENERATE
+        label: Generate
+        layout {
+            sequence: 90
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process generate (
+        name: GENERATE
+        type: invokeApi
+        invoke {
+            package: APEX_DB_DICTIONARY
+            procedureOrFunction: GET_TABLE_INFO
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 15962164728323415
+        }
+
+        parameter (
+            type: functionResult
+            parameter {
+                dataType: clob
+            }
+            value {
+                item: P1_DOCUMENT
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_format (
+            parameter {
+                dataType: plsqlInteger
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_FORMAT
+            }
+            advanced {
+                displaySequence: 90
+            }
+        )
+
+        parameter p_include_annotations (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_INCLUDE_ANNOTATIONS
+                trueValue: Y
+                falseValue: N
+            }
+            advanced {
+                displaySequence: 60
+            }
+        )
+
+        parameter p_include_comments (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_INCLUDE_COMMENTS
+                trueValue: Y
+                falseValue: N
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+        parameter p_include_constraints (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_INCLUDE_CONSTRAINTS
+                trueValue: Y
+                falseValue: N
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_include_domains (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_INCLUDE_DOMAINS
+                trueValue: Y
+                falseValue: N
+            }
+            advanced {
+                displaySequence: 70
+            }
+        )
+
+        parameter p_include_indexes (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_INCLUDE_INDEXES
+                trueValue: Y
+                falseValue: N
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_include_virtual_columns (
+            parameter {
+                dataType: boolean
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_INCLUDE_VIRTUAL_COLUMNS
+                trueValue: Y
+                falseValue: N
+            }
+            advanced {
+                displaySequence: 80
+            }
+        )
+
+        parameter p_table_names (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_TABLE_NAMES
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+    )
+
+)
+
