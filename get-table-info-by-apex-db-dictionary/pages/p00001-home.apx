@@ -265,6 +265,9 @@ page 1 (
         advanced {
             executionMappingIdentifier: 15962164728323415
         }
+        serverSideCondition {
+            whenButtonPressed: @generate
+        }
 
         parameter (
             type: functionResult
