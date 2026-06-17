@@ -16,7 +16,7 @@ page 9999 (
     }
 
     region 世界食堂 (
-        name: World Dinar
+        name: World Diner
         title: &APP_TEXT$APP_NAME.
         type: staticContent
         layout {

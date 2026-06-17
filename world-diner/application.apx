@@ -1,5 +1,5 @@
-app WORLD-DINAR (
-    name: World Dinar
+app WORLD-DINER (
+    name: World Diner
     logo {
         type: text
         text: &APP_TEXT$APP_NAME.
