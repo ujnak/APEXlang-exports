@@ -1,0 +1,9 @@
+installScript prepare.sql (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: prepare-sql.sql
+    }
+)
+
