@@ -1,0 +1,61 @@
+app WORLD-DINAR (
+    name: World Dinar
+    logo {
+        type: text
+        text: &APP_TEXT$APP_NAME.
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            t-TreeNav--styleA
+            js-navCollapsed--hidden
+        ]
+        list: @ナビゲーション-メニュー
+    }
+    navigationBar {
+        list: @ナビゲーション-バー
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apexアカウント
+    }
+    sessionStateProtection {
+        checksumSalt: 30D5E443BED3A75BF107016AB34B4AAA425F1DF61D80234004957F35E168D59B
+    }
+    globalization {
+        primaryLanguage: ja
+        translationMethod: textMessages
+        languageDerivedFrom: browserPreference
+    }
+    runtime {
+        allowFeedback: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: &APP_TEXT$APP_NAME.
+        }
+    )
+
+)
+

@@ -1,0 +1,364 @@
+textMessage APP_NAME (
+    message {
+        text: World Diner
+        language: en
+    }
+)
+
+textMessage APP_NAME (
+    message {
+        text: 世界食堂
+        language: ja
+    }
+)
+
+textMessage APP_NAME (
+    message {
+        text: 세계식당
+        language: ko
+    }
+)
+
+textMessage APP_NAME (
+    message {
+        text: 世界食堂
+        language: zh-cn
+    }
+)
+
+textMessage AUTH_ADMIN_REQUIRED (
+    message {
+        text: Insufficient privileges. The user is not an administrator.
+        language: en
+    }
+)
+
+textMessage AUTH_ADMIN_REQUIRED (
+    message {
+        text: 権限が不十分です。ユーザーは管理者ではありません
+        language: ja
+    }
+)
+
+textMessage AUTH_ADMIN_REQUIRED (
+    message {
+        text: 권한이 부족합니다. 사용자가 관리자가 아닙니다.
+        language: ko
+    }
+)
+
+textMessage AUTH_ADMIN_REQUIRED (
+    message {
+        text: 权限不足。用户不是管理员。
+        language: zh-cn
+    }
+)
+
+textMessage HOME (
+    message {
+        text: Home
+        language: en
+    }
+)
+
+textMessage HOME (
+    message {
+        text: ホーム
+        language: ja
+    }
+)
+
+textMessage HOME (
+    message {
+        text: 홈
+        language: ko
+    }
+)
+
+textMessage HOME (
+    message {
+        text: 主页
+        language: zh-cn
+    }
+)
+
+textMessage LOGIN_PAGE_TITLE (
+    message {
+        text: World Diner - Sign In
+        language: en
+    }
+)
+
+textMessage LOGIN_PAGE_TITLE (
+    message {
+        text: 世界食堂 - ログイン
+        language: ja
+    }
+)
+
+textMessage LOGIN_PAGE_TITLE (
+    message {
+        text: 세계식당 - 로그인
+        language: ko
+    }
+)
+
+textMessage LOGIN_PAGE_TITLE (
+    message {
+        text: 世界食堂 - 登录
+        language: zh-cn
+    }
+)
+
+textMessage MENU (
+    message {
+        text: Menu
+        language: en
+    }
+)
+
+textMessage MENU (
+    message {
+        text: メニュー
+        language: ja
+    }
+)
+
+textMessage MENU (
+    message {
+        text: 메뉴
+        language: ko
+    }
+)
+
+textMessage MENU (
+    message {
+        text: 菜单
+        language: zh-cn
+    }
+)
+
+textMessage MENU_NAME (
+    message {
+        text: Menu Name
+        language: en
+    }
+)
+
+textMessage MENU_NAME (
+    message {
+        text: メニュー名
+        language: ja
+    }
+)
+
+textMessage MENU_NAME (
+    message {
+        text: 메뉴명
+        language: ko
+    }
+)
+
+textMessage MENU_NAME (
+    message {
+        text: 菜单名称
+        language: zh-cn
+    }
+)
+
+textMessage PASSWORD (
+    message {
+        text: Password
+        language: en
+    }
+)
+
+textMessage PASSWORD (
+    message {
+        text: パスワード
+        language: ja
+    }
+)
+
+textMessage PASSWORD (
+    message {
+        text: 비밀번호
+        language: ko
+    }
+)
+
+textMessage PASSWORD (
+    message {
+        text: 密码
+        language: zh-cn
+    }
+)
+
+textMessage PRICE (
+    message {
+        text: Price
+        language: en
+    }
+)
+
+textMessage PRICE (
+    message {
+        text: 値段
+        language: ja
+    }
+)
+
+textMessage PRICE (
+    message {
+        text: 가격
+        language: ko
+    }
+)
+
+textMessage PRICE (
+    message {
+        text: 价格
+        language: zh-cn
+    }
+)
+
+textMessage REMEMBER_USERNAME (
+    message {
+        text: Remember username
+        language: en
+    }
+)
+
+textMessage REMEMBER_USERNAME (
+    message {
+        text: ユーザー名を記憶
+        language: ja
+    }
+)
+
+textMessage REMEMBER_USERNAME (
+    message {
+        text: 사용자 이름 기억
+        language: ko
+    }
+)
+
+textMessage REMEMBER_USERNAME (
+    message {
+        text: 记住用户名
+        language: zh-cn
+    }
+)
+
+textMessage SIGN_IN (
+    message {
+        text: Sign In
+        language: en
+    }
+)
+
+textMessage SIGN_IN (
+    message {
+        text: サインイン
+        language: ja
+    }
+)
+
+textMessage SIGN_IN (
+    message {
+        text: 로그인
+        language: ko
+    }
+)
+
+textMessage SIGN_IN (
+    message {
+        text: 登录
+        language: zh-cn
+    }
+)
+
+textMessage SIGN_OUT (
+    message {
+        text: Sign Out
+        language: en
+    }
+)
+
+textMessage SIGN_OUT (
+    message {
+        text: サインアウト
+        language: ja
+    }
+)
+
+textMessage SIGN_OUT (
+    message {
+        text: 로그아웃
+        language: ko
+    }
+)
+
+textMessage SIGN_OUT (
+    message {
+        text: 退出登录
+        language: zh-cn
+    }
+)
+
+textMessage SIZE (
+    message {
+        text: Size
+        language: en
+    }
+)
+
+textMessage SIZE (
+    message {
+        text: サイズ
+        language: ja
+    }
+)
+
+textMessage SIZE (
+    message {
+        text: 크기
+        language: ko
+    }
+)
+
+textMessage SIZE (
+    message {
+        text: 大小
+        language: zh-cn
+    }
+)
+
+textMessage USERNAME (
+    message {
+        text: Username
+        language: en
+    }
+)
+
+textMessage USERNAME (
+    message {
+        text: ユーザー名
+        language: ja
+    }
+)
+
+textMessage USERNAME (
+    message {
+        text: 사용자 이름
+        language: ko
+    }
+)
+
+textMessage USERNAME (
+    message {
+        text: 用户名
+        language: zh-cn
+    }
+)
+

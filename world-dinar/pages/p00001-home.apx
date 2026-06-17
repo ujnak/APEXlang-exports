@@ -1,0 +1,113 @@
+page 1 (
+    name: Home
+    alias: HOME
+    title: &APP_TEXT$APP_NAME.
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region menu_1 (
+        name: Menu
+        title: &APP_TEXT$MENU.
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: WR_MENUS_VL
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+
+        column ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Id
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+        )
+
+        column MENU_NAME (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: &APP_TEXT$MENU_NAME.
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column PRICE (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: &APP_TEXT$PRICE.
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+        )
+
+        column VOLUME (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: &APP_TEXT$SIZE.
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+    )
+
+    region 世界食堂 (
+        name: World Dinar
+        title: &APP_TEXT$APP_NAME.
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+)
+

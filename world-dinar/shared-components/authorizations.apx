@@ -1,0 +1,11 @@
+authorization 管理権限 (
+    name: 管理権限
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody: return true;
+    }
+    error {
+        errorMessage: &APP_TEXT$AUTH_ADMIN_REQUIRED.
+    }
+)
+

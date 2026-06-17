@@ -1,0 +1,18 @@
+breadcrumb ブレッドクラム (
+    name: ブレッドクラム
+
+    entry ホーム (
+        name: &APP_TEXT$HOME.
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+
