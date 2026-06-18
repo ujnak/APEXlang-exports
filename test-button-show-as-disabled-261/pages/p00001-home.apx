@@ -1,0 +1,193 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: ボタンの無効化
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region ボタンの無効化 (
+        name: ボタンの無効化
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    pageItem P1_ITEM1 (
+        type: textField
+        label {
+            label: Item1
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    pageItem P1_ITEM2 (
+        type: textField
+        label {
+            label: Item2
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    button button (
+        buttonName: BUTTON
+        label: Button
+        layout {
+            sequence: 40
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            showAsDisabled: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+        advanced {
+            htmlDomId: myButton
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: false
+        }
+    )
+
+    button disable-button (
+        buttonName: DISABLE_BUTTON
+        label: Disable Button
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-enable (
+            action: disable
+            affectedElements {
+                selectionType: button
+                button: @button
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button enable-button (
+        buttonName: ENABLE_BUTTON
+        label: Enable Button
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-enable (
+            action: enable
+            affectedElements {
+                selectionType: button
+                button: @button
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    dynamicAction onload (
+        name: onLoad
+        execution {
+            sequence: 10
+        }
+        when {
+            event: ready
+        }
+        config {
+            buildOption: @commented-out
+        }
+
+        action native-show (
+            action: disable
+            affectedElements {
+                selectionType: button
+                button: @button
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    process copy (
+        name: copy
+        type: executeCode
+        source {
+            plsqlCode: :P1_ITEM2 := :P1_ITEM1;
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 18202643585530731
+        }
+        serverSideCondition {
+            whenButtonPressed: @button
+        }
+    )
+
+)
+
