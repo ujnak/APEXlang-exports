@@ -1,0 +1,208 @@
+list ジョブのリスト (
+    name: ジョブのリスト
+
+    entry analyst (
+        label: ANALYST
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            1: select-job-analyst
+        }
+    )
+
+    entry clerk (
+        label: CLERK
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            1: select-job-clerk
+        }
+    )
+
+    entry manager (
+        label: MANAGER
+        layout {
+            sequence: 40
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            1: select-job-manager
+        }
+    )
+
+    entry president (
+        label: PRESIDENT
+        layout {
+            sequence: 50
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            1: select-job-president
+        }
+    )
+
+    entry salesman (
+        label: SALESMAN
+        layout {
+            sequence: 30
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            1: select-job-salesman
+        }
+    )
+
+)
+
+list ナビゲーション-バー (
+    name: ナビゲーション・バー
+
+    entry app-user (
+        label: &APP_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+    )
+
+    entry list_item (
+        label: ---
+        layout {
+            sequence: 20
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+    )
+
+    entry サインアウト (
+        label: サインアウト
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 30
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+    )
+
+)
+
+list ナビゲーション-メニュー (
+    name: ナビゲーション・メニュー
+
+    entry 26-1-ボタン (
+        label: 26.1 ボタン
+        layout {
+            sequence: 40
+        }
+        isCurrent {
+            type: pages
+            pages: 4
+        }
+        link {
+            target: {
+                page: 4
+            }
+        }
+    )
+
+    entry emp (
+        label: EMP
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry メニュー-ウィジェット (
+        label: メニュー・ウィジェット
+        layout {
+            sequence: 20
+        }
+        isCurrent {
+            type: pages
+            pages: 2
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry メニュー-ウィジェット２ (
+        label: メニュー・ウィジェット２
+        layout {
+            sequence: 30
+        }
+        isCurrent {
+            type: pages
+            pages: 3
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+)
+

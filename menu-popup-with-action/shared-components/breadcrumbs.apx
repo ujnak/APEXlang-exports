@@ -1,0 +1,31 @@
+breadcrumb ブレッドクラム (
+    name: ブレッドクラム
+
+    entry emp (
+        name: EMP
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry メニュー-ウィジェット (
+        name: メニュー・ウィジェット
+        pageNumber: 2
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+)
+

@@ -1,0 +1,71 @@
+app MENU-POPUP-WITH-ACTION (
+    name: メニュー・ポップアップ
+    version: リリース1.0
+    logo {
+        type: text
+        text: メニュー・ポップアップ
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            js-defaultCollapsed
+            js-navCollapsed--hidden
+            t-TreeNav--styleA
+        ]
+        list: @ナビゲーション-メニュー
+    }
+    navigationBar {
+        list: @ナビゲーション-バー
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apexアカウント
+    }
+    sessionStateProtection {
+        checksumSalt: A7C356F85C30D8B83FB74F5B17B4BF2A554C87CCA184A9A35F8BF1D8429D47E0
+    }
+    sessionManagement {
+        sessionStateCommits: immediate
+    }
+    globalization {
+        primaryLanguage: ja
+        documentDirection: leftToRight
+    }
+    runtime {
+        allowFeedback: true
+        compatibilityMode: 21.2
+        accessibleReadOnlyItems: false
+    }
+    advanced {
+        passEcid: false
+        modernizeApp: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: メニュー・ポップアップ
+        }
+    )
+
+)
+

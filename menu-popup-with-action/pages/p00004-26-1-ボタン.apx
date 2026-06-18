@@ -1,0 +1,370 @@
+page 4 (
+    name: 26.1 ボタン
+    alias: 26-1-ボタン
+    title: 26.1 ボタン
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region employees (
+        name: Employees
+        type: classicReport
+        source {
+            location: localDatabase
+            tableName: EMP
+            whereClause: :P4_JOB is null or JOB = :P4_JOB
+            pageItemsToSubmit: P4_JOB
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            htmlDomId: EMP
+        }
+        reportLayout {
+            numberOfRows: 50
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--staticRowColors
+                t-Report--rowHighlight
+                t-Report--inline
+                t-Report--hideNoPagination
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+        performance {
+            maxRowsToProcess: 500
+        }
+        messages {
+            whenNoDataFound: データが見つかりません
+        }
+
+        column COMM (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: Commission
+                alignment: end
+            }
+            layout {
+                sequence: 7
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 9990
+            }
+        )
+
+        column DEPTNO (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            type: plainTextBasedOnLov
+            heading {
+                heading: Department
+            }
+            lov {
+                type: sharedComponent
+                lov: @dept-dname
+            }
+            layout {
+                sequence: 8
+            }
+        )
+
+        column EMPNO (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            type: hidden
+            layout {
+                sequence: 0
+            }
+        )
+
+        column ENAME (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Employee Name
+            }
+            layout {
+                sequence: 2
+            }
+        )
+
+        column HIREDATE (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Hired
+                alignment: center
+            }
+            layout {
+                sequence: 5
+                columnAlignment: center
+            }
+        )
+
+        column JOB (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Job
+            }
+            layout {
+                sequence: 3
+            }
+        )
+
+        column MGR (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            type: plainTextBasedOnLov
+            heading {
+                heading: Manager
+            }
+            lov {
+                type: sharedComponent
+                lov: @emp-ename
+            }
+            layout {
+                sequence: 4
+            }
+        )
+
+        column SAL (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: Salary
+                alignment: end
+            }
+            layout {
+                sequence: 6
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G999G999G999G999G999G990
+            }
+        )
+
+    )
+
+    region メニュー-ポップアップ (
+        name: メニュー・ポップアップ
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    pageItem P4_JOB (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+    )
+
+    button select-job (
+        buttonName: SELECT_JOB
+        label: Select Job
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            type: menu
+        }
+
+        menu analyst (
+            label: ANALYST
+            layout {
+                sequence: 10
+            }
+            behavior {
+                type: triggerAction
+            }
+
+            triggerAction native-set-value (
+                action: setValue
+                settings {
+                    value: ANALYST
+                }
+                affectedElements {
+                    selectionType: items
+                    items: P4_JOB
+                }
+                execution {
+                    sequence: 10
+                }
+            )
+
+        )
+
+        menu clerk (
+            label: CLERK
+            layout {
+                sequence: 20
+            }
+            behavior {
+                type: triggerAction
+            }
+
+            triggerAction native-javascript-code (
+                action: setValue
+                settings {
+                    value: CLERK
+                }
+                affectedElements {
+                    selectionType: items
+                    items: P4_JOB
+                }
+                execution {
+                    sequence: 10
+                }
+            )
+
+        )
+
+        menu manager (
+            label: MANAGER
+            layout {
+                sequence: 40
+            }
+            behavior {
+                type: triggerAction
+            }
+
+            triggerAction native-javascript-code (
+                action: setValue
+                settings {
+                    value: MANAGER
+                }
+                affectedElements {
+                    selectionType: items
+                    items: P4_JOB
+                }
+                execution {
+                    sequence: 10
+                }
+            )
+
+        )
+
+        menu president (
+            label: PRESIDENT
+            layout {
+                sequence: 50
+            }
+            behavior {
+                type: triggerAction
+            }
+
+            triggerAction native-javascript-code (
+                action: setValue
+                settings {
+                    value: PRESIDENT
+                }
+                affectedElements {
+                    selectionType: items
+                    items: P4_JOB
+                }
+                execution {
+                    sequence: 10
+                }
+            )
+
+        )
+
+        menu salesman (
+            label: SALESMAN
+            layout {
+                sequence: 30
+            }
+            behavior {
+                type: triggerAction
+            }
+
+            triggerAction native-javascript-code (
+                action: setValue
+                settings {
+                    value: SALESMAN
+                }
+                affectedElements {
+                    selectionType: items
+                    items: P4_JOB
+                }
+                execution {
+                    sequence: 10
+                }
+            )
+
+        )
+
+    )
+
+    dynamicAction onchange (
+        name: onChange
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: P4_JOB
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @employees
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+
