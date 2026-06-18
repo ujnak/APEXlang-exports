@@ -1,0 +1,7 @@
+pageGroup employee-management (
+    name: Employee Management
+    description {
+        description: 従業員マスタの一覧表示および従業員情報の登録・更新・削除を行う業務フロー。
+    }
+)
+

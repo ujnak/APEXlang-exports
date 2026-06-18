@@ -1,0 +1,403 @@
+page 1 (
+    name: Employee List
+    alias: EMPLOYEE-LIST
+    title: Employee List
+    pageGroup: @employee-management
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: mustNotBePublicUser
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    advanced {
+        enableDuplicatePageSubmissions: false
+    }
+    comments {
+        comments: 従業員情報と、部署マスタから参照した部署名および所在地を表示する。
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 5
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region employee-report (
+        name: Employee Report
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: EMP_DEPT_V
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        advanced {
+            htmlDomId: employee-report
+        }
+        comments {
+            comments: 従業員マスタと部署マスタの情報を表示し、対象の従業員を選択できるようにする。
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 2
+                items: {
+                    P2_EMPNO: \#EMPNO#\
+                }
+            }
+            linkIcon: <span role="img" aria-label="編集" class="fa fa-edit" title="編集"></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        genAI {
+            naturalLanguageSupport: true
+        }
+        advanced {
+            savedReportMappingIdentifier: 17789353453039453
+        }
+
+        column COMM (
+            type: plainText
+            heading {
+                heading: 歩合給
+                alignment: end
+            }
+            layout {
+                sequence: 100
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990D00
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column DEPTNO (
+            type: plainText
+            heading {
+                heading: 所属部署番号
+                alignment: end
+            }
+            layout {
+                sequence: 60
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column DNAME (
+            type: plainText
+            heading {
+                heading: 部署名
+            }
+            layout {
+                sequence: 70
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column EMPNO (
+            type: plainText
+            heading {
+                heading: 従業員番号
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column ENAME (
+            type: plainText
+            heading {
+                heading: 従業員氏名
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column HIREDATE (
+            type: plainText
+            heading {
+                heading: 入社日
+            }
+            layout {
+                sequence: 50
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column JOB (
+            type: plainText
+            heading {
+                heading: 職種
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column LOC (
+            type: plainText
+            heading {
+                heading: 所在地
+            }
+            layout {
+                sequence: 80
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column MGR (
+            type: plainText
+            heading {
+                heading: 直属上司の従業員番号
+            }
+            layout {
+                sequence: 40
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column SAL (
+            type: plainText
+            heading {
+                heading: 基本給与
+                alignment: end
+            }
+            layout {
+                sequence: 90
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990D00
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport employee-report-primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn COMM (
+                sequence: 10
+            )
+
+            displayColumn DEPTNO (
+                sequence: 6
+            )
+
+            displayColumn DNAME (
+                sequence: 7
+            )
+
+            displayColumn EMPNO (
+                sequence: 1
+            )
+
+            displayColumn ENAME (
+                sequence: 2
+            )
+
+            displayColumn HIREDATE (
+                sequence: 5
+            )
+
+            displayColumn JOB (
+                sequence: 3
+            )
+
+            displayColumn LOC (
+                sequence: 8
+            )
+
+            displayColumn MGR (
+                sequence: 4
+            )
+
+            displayColumn SAL (
+                sequence: 9
+            )
+
+        )
+
+    )
+
+    button reset-employee-report (
+        buttonName: RESET-employee-report
+        label: Reset
+        layout {
+            sequence: 2
+            region: @employee-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text-with-icon
+            templateOptions: [
+                #DEFAULT#
+                t-Button--iconLeft
+            ]
+            icon: fa-undo-alt
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction reset (
+            name: Reset
+            action: executeJsCode
+            settings {
+                jsCode: apex.jQuery("#employee-report_actions_menu").menu("find", "irReset").action();
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button 従業員登録 (
+        buttonName: 従業員登録
+        label: 従業員登録
+        layout {
+            sequence: 1
+            region: @employee-report
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    dynamicAction dialog-refresh-employee-report (
+        name: Refresh on dialog close Employee Report
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @employee-report
+        }
+
+        action refresh (
+            action: refresh
+            settings {
+                maintainPagination: true
+            }
+            affectedElements {
+                selectionType: region
+                region: @employee-report
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

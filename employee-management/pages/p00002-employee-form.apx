@@ -1,0 +1,449 @@
+page 2 (
+    name: Employee Form
+    alias: EMPLOYEE-FORM
+    title: Employee Form
+    pageGroup: @employee-management
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            js-dialog-class-t-Drawer--pullOutEnd
+        ]
+    }
+    dialog {
+        chained: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        authorizationScheme: mustNotBePublicUser
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    advanced {
+        enableDuplicatePageSubmissions: false
+    }
+    comments {
+        comments: 従業員の基本情報、所属組織、上司および給与情報を単一レコードとして管理する。
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region employee-form (
+        name: Employee Form
+        type: form
+        source {
+            location: localDatabase
+            tableName: EMP
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+                t-Region--noBorder
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        comments {
+            comments: 従業員マスタの1レコードを管理し、所属部署番号、基本給与および歩合給を更新する。
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P2_COMM (
+        type: numberField
+        label {
+            label: 歩合給
+            alignment: right
+        }
+        layout {
+            sequence: 80
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: 999G999G999G999G990D00
+            width: 32
+        }
+        source {
+            formRegion: @employee-form
+            column: COMM
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_DEPTNO (
+        type: selectList
+        label {
+            label: 所属部署番号
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @lov-departments
+        }
+        layout {
+            sequence: 60
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @employee-form
+            column: DEPTNO
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_EMPNO (
+        type: numberField
+        label {
+            label: 従業員番号
+            alignment: right
+        }
+        layout {
+            sequence: 10
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @employee-form
+            column: EMPNO
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_ENAME (
+        type: textField
+        label {
+            label: 従業員氏名
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @employee-form
+            column: ENAME
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_HIREDATE (
+        type: datePicker
+        label {
+            label: 入社日
+            alignment: right
+        }
+        layout {
+            sequence: 50
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @employee-form
+            column: HIREDATE
+            dataType: date
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_JOB (
+        type: textField
+        label {
+            label: 職種
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @employee-form
+            column: JOB
+            dataType: varchar2
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_MGR (
+        type: selectList
+        label {
+            label: 直属上司の従業員番号
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @lov-employees
+        }
+        layout {
+            sequence: 40
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @employee-form
+            column: MGR
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P2_SAL (
+        type: numberField
+        label {
+            label: 基本給与
+            alignment: right
+        }
+        layout {
+            sequence: 70
+            region: @employee-form
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            formatMask: 999G999G999G999G990D00
+            width: 32
+        }
+        source {
+            formRegion: @employee-form
+            column: SAL
+            dataType: number
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    button キャンセル (
+        buttonName: キャンセル
+        label: キャンセル
+        layout {
+            sequence: 4
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            executeValidations: false
+        }
+
+        triggerAction cancel-dialog (
+            name: Cancel Dialog
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button 従業員削除 (
+        buttonName: 従業員削除
+        label: 従業員削除
+        layout {
+            sequence: 3
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P2_EMPNO
+        }
+    )
+
+    button 従業員情報更新 (
+        buttonName: 従業員情報更新
+        label: 従業員情報更新
+        layout {
+            sequence: 2
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P2_EMPNO
+        }
+    )
+
+    button 従業員登録 (
+        buttonName: 従業員登録
+        label: 従業員登録
+        layout {
+            sequence: 1
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P2_EMPNO
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            itemsToReturn: P2_EMPNO
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 17792654267039454
+        }
+    )
+
+    process initialize-form-employee-form (
+        name: Initialize form Employee Form
+        type: formInitialization
+        formRegion: @employee-form
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 17792794398039454
+        }
+    )
+
+    process process-form-employee-form (
+        name: Process form Employee Form
+        type: formAutoRowProcessing
+        formRegion: @employee-form
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 17792847751039454
+        }
+    )
+
+)
+

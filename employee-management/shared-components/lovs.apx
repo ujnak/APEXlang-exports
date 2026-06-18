@@ -1,0 +1,22 @@
+lov lov-departments (
+    name: LOV_DEPARTMENTS
+    source {
+        tableName: DEPT
+    }
+    columnMapping {
+        return: DEPTNO
+        display: DNAME
+    }
+)
+
+lov lov-employees (
+    name: LOV_EMPLOYEES
+    source {
+        tableName: EMP
+    }
+    columnMapping {
+        return: EMPNO
+        display: ENAME
+    }
+)
+
