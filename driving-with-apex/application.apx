@@ -1,8 +1,5 @@
 app DRIVING-WITH-APEX (
     name: Driving with APEX
-    genAI {
-        service: @gpt-5-5
-    }
     logo {
         type: text
         text: Driving with APEX
