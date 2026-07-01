@@ -1,0 +1,128 @@
+aiAgent salary-management-agent (
+    name: Salary Management Agent
+    genAI {
+        service: @lm-studio-gemma4
+        systemPrompt:
+            ```
+            従業員の給与を更新します。
+            利用できるツールにupdate_salaryが含まれていない場合は、給与の更新手段がありません。その場合は、更新できません、と返します。
+            ```
+    }
+
+    tool get-empno-from-ename (
+        name: get_empno_from_ename
+        type: executeServersideCode
+        executionPoint: onDemand
+        description: 従業員名から従業員番号を取得します。
+        settings {
+            language: plsql
+            plsqlCode:
+                ```plsql
+                declare
+                    l_empno emp.empno%type;
+                    l_response clob;
+                begin
+                    select empno into l_empno from emp where ename = :ENAME;
+                    l_response := apex_string.format('empno %s found for ename %s', l_empno, :ENAME);
+                    apex_ai.set_tool_result( p_result => l_response );
+                exception
+                    when no_data_found then
+                        l_response := apex_string.format('No empno found for %s, perhapse the employee with the name does not exist.', :EMPNO);
+                        apex_ai.set_tool_result( p_result => l_response );
+                end;
+                ```
+        }
+
+        parameter ENAME (
+            description: 従業員名
+        )
+
+    )
+
+    tool inject-schema-information (
+        name: inject_schema_information
+        type: retrieveData
+        executionPoint: augmentSystemPrompt
+        settings {
+            dataDescription: 従業員給与を保持するスキーマ情報。
+            type: functionBody
+            language: plsql
+            plsqlFunctionBody:
+                ```plsql
+                declare
+                    l_text clob; 
+                begin
+                    l_text := apex_db_dictionary.get_table_info( 
+                        p_table_names => 'EMP, DEPT' );
+                    return l_text;
+                end;
+                ```
+        }
+
+        parameter TABLES (
+            description: スキーマを含める表（コロン区切り複数）
+        )
+
+    )
+
+    tool refresh-report (
+        name: refresh_report
+        type: executeClientsideCode
+        executionPoint: onDemand
+        description: 従業員一覧のレポートをリフレッシュします。
+        settings {
+            jsCode: apex.region("EMP").refresh();
+        }
+    )
+
+    tool update-salary (
+        name: update_salary
+        type: executeServersideCode
+        executionPoint: onDemand
+        description:
+            ```
+            指定した従業員番号の従業員の給与を更新します。
+            更新後はツールrefresh_reportを呼び出して、レポートの表示を更新します。
+            ```
+        settings {
+            language: plsql
+            plsqlCode:
+                ```plsql
+                declare
+                begin
+                    update emp set sal = :SAL where empno = :EMPNO;
+                end;
+                ```
+        }
+        userApproval {
+            requiresConfirmation: true
+            title: 給与の更新
+            message: 従業員&EMPNO.の給与を&SAL.に更新します。
+        }
+        notification {
+            message: 給与を更新しました。
+            type: success
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P1_ENAME = 'KING'
+        }
+
+        parameter EMPNO (
+            description: 従業員番号
+            value {
+                dataType: number
+            }
+        )
+
+        parameter SAL (
+            description: 給与
+            value {
+                dataType: number
+            }
+        )
+
+    )
+
+)
+

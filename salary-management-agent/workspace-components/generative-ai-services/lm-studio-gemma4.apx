@@ -1,0 +1,11 @@
+genAIService lm-studio-gemma4 (
+    name: LM Studio Gemma4
+    provider: genericOpenaiApiCompatible
+    endpointUrl {
+        url: http://host.docker.internal:1234/v1/chat/completions
+    }
+    advanced {
+        modelName: google/gemma-4-31b-qat
+    }
+)
+
