@@ -1,0 +1,143 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: Driving with APEX
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: https://cdn.babylonjs.com/babylon.js
+        functionAndGlobalVariableDeclaration:
+            ```javascript-browser
+            let engine, scene, car;
+            
+            function initBabylonCar() {
+                const canvas = document.getElementById("renderCanvas");
+                engine = new BABYLON.Engine(canvas, true);
+                scene = new BABYLON.Scene(engine);
+            
+                new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 8, new BABYLON.Vector3(0, 0.6, 0), scene)
+                    .attachControl(canvas, true);
+                new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            
+                car = new BABYLON.TransformNode("car", scene);
+            
+                const box = (name, w, h, d, x, y, z) => {
+                    const m = BABYLON.MeshBuilder.CreateBox(name, { width: w, height: h, depth: d }, scene);
+                    m.position.set(x, y, z);
+                    m.parent = car;
+                    return m;
+                };
+            
+                box("body", 0.75, 0.15, 0.375, 0, 0.15, 0);
+                box("cabin", 0.35, 0.175, 0.275, -0.075, 0.3, 0);
+            
+                [[-0.25, -0.2125], [0.25, -0.2125], [-0.25, 0.2125], [0.25, 0.2125]].forEach(([x, z], i) => {
+                    const wheel = BABYLON.MeshBuilder.CreateCylinder("wheel" + i, { diameter: 0.125, height: 0.0875, tessellation: 24 }, scene);
+                    wheel.rotation.x = Math.PI / 2;
+                    wheel.position.set(x, 0.075, z);
+                    wheel.parent = car;
+                });
+            
+                engine.runRenderLoop(() => scene.render());
+                window.addEventListener("resize", () => engine.resize());
+            }
+            ```
+        executeWhenPageLoads: initBabylonCar()
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region car (
+        name: Car
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <div id="babylonRegion" style="width:100%; height:500px;">
+                    <canvas id="renderCanvas" style="width:100%; height:100%; touch-action:none;"></canvas>
+                </div>
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region drive (
+        name: Drive
+        type: staticContent
+        source {
+            htmlCode: <div id="drive"></div>
+        }
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+    )
+
+    region driving-with-apex (
+        name: Driving with APEX
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    dynamicAction init-car-driver (
+        name: Init Car Driver
+        execution {
+            sequence: 10
+        }
+        when {
+            event: ready
+        }
+
+        action native-open-ai-assistant (
+            action: showAiAssistant
+            genAI {
+                agent: @car-driver
+            }
+            appearance {
+                displayAs: inline
+                containerSelector: #drive
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+)
+

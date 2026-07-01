@@ -1,0 +1,17 @@
+genAIService gpt-5-5 (
+    name: GPT-5.5
+    provider: openai
+    endpointUrl {
+        url: https://api.openai.com/v1
+    }
+    authentication {
+        credentials: @gpt-5-5の資格証明
+    }
+    appBuilder {
+        defaultForNewApps: true
+    }
+    advanced {
+        modelName: gpt-5.5
+    }
+)
+

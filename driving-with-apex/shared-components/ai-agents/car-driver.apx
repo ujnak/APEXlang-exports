@@ -1,0 +1,95 @@
+aiAgent car-driver (
+    name: Car Driver
+    genAI {
+        service: @lm-studio-gemma4
+        systemPrompt: babylon.jsでキャンバスに描画された車を移動します。
+        welcomeMessage: さあ、車を動かしましょう。
+    }
+
+    tool move-car-down (
+        name: move_car_down
+        type: executeClientsideCode
+        executionPoint: onDemand
+        description: 車を下に、指示した距離だけ移動します。
+        settings {
+            jsCode:
+                ```javascript-browser
+                car.position.y -= this.data.DISTANCE;
+                return {};
+                ```
+        }
+
+        parameter DISTANCE (
+            description: 移動する距離
+            value {
+                dataType: number
+            }
+        )
+
+    )
+
+    tool move-car-left (
+        name: move_car_left
+        type: executeClientsideCode
+        executionPoint: onDemand
+        description: 車を左に、指示した距離だけ移動します。
+        settings {
+            jsCode:
+                ```javascript-browser
+                car.position.x -= this.data.DISTANCE;
+                return {};
+                ```
+        }
+
+        parameter DISTANCE (
+            description: 移動する距離
+            value {
+                dataType: number
+            }
+        )
+
+    )
+
+    tool move-car-right (
+        name: move_car_right
+        type: executeClientsideCode
+        executionPoint: onDemand
+        description: 車を右に、指示した距離だけ移動します。
+        settings {
+            jsCode:
+                ```javascript-browser
+                car.position.x += this.data.DISTANCE;
+                return {};
+                ```
+        }
+
+        parameter DISTANCE (
+            description: 移動する距離
+            value {
+                dataType: number
+            }
+        )
+
+    )
+
+    tool move-car-up (
+        name: move_car_up
+        type: executeClientsideCode
+        executionPoint: onDemand
+        description: 車を上に、指示した距離だけ移動します。
+        settings {
+            jsCode:
+                ```javascript-browser
+                car.position.y += this.data.DISTANCE;
+                return {};
+                ```
+        }
+
+        parameter DISTANCE (
+            description: 移動する距離
+        )
+
+    )
+
+)
+
