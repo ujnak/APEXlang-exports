@@ -1,0 +1,59 @@
+app DRAW-POLYGON-ON-MAP (
+    name: Draw Polygon On Map
+    logo {
+        type: text
+        text: Draw Polygon On Map
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            t-TreeNav--styleA
+            js-navCollapsed--hidden
+        ]
+        list: @ナビゲーション-メニュー
+    }
+    navigationBar {
+        list: @ナビゲーション-バー
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apexアカウント
+    }
+    sessionStateProtection {
+        checksumSalt: 635BC1994B1EC3FE3FF661113417551B8C8CA99F77EE6CBE6B61879F7CD10A88
+    }
+    globalization {
+        primaryLanguage: ja
+    }
+    runtime {
+        allowFeedback: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: Draw Polygon On Map
+        }
+    )
+
+)
+

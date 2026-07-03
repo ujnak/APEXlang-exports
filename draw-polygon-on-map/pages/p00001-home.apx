@@ -1,0 +1,241 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: Draw Polygon On Map
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region chat (
+        name: Chat
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            htmlDomId: chat
+        }
+    )
+
+    region draw-polygon-on-map (
+        name: Draw Polygon On Map
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    region map (
+        name: Map
+        type: map
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            htmlDomId: MAP
+        }
+        controls {
+            options: [
+                scaleBar
+                infiniteMap
+                rectangleZoom
+            ]
+        }
+        attributes {
+            messagesPosition: below
+        }
+
+        layer Polygon (
+            name: Polygon
+            layerType: polygons
+            layout {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery: select 'label' as label, null as polygon from dual where 1<>1
+            }
+            columnMapping {
+                geometryColumnDataType: geojson
+                geojsonColumn: POLYGON
+            }
+            appearance {
+                fillColor: #ac1b1b
+                fillOpacity: 0.5
+                strokeColor: #ac1b1b
+            }
+        )
+
+    )
+
+    pageItem P1_POLYGON (
+        type: textarea
+        label {
+            label: Polygon
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @chat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+    )
+
+    pageItem P1_PROMPT (
+        type: textField
+        label {
+            label: Prompt
+            alignment: left
+        }
+        layout {
+            sequence: 10
+            region: @chat
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    button draw (
+        buttonName: DRAW
+        label: Draw
+        layout {
+            sequence: 20
+            region: @chat
+            slot: regionBody
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction draw-from-prompt (
+            name: Get a polygon from a prompt
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    begin
+                        :P1_POLYGON := apex_ai.generate(
+                            p_agent_static_id => 'get-polygon-from-a-prompt'
+                           ,p_prompt => :P1_PROMPT
+                        );
+                    end;
+                    ```
+                itemsToSubmit: P1_PROMPT
+                itemsToReturn: P1_POLYGON
+                showProcessing: true
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        triggerAction draw-polygon (
+            name: Draw a polygon on a map
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    /*
+                     * HTML DOM IDがMAPのマップ・リージョンから、
+                     * MapLibreとして操作するオプジェクトを取得します。
+                     */
+                    const mapRegion = apex.region("MAP");
+                    const map = mapRegion.call("getMapObject");
+                    
+                    /*
+                     * 先行するAIエージェントが返したポリゴンが
+                     * P1_POLYGONに設定されています。
+                     */
+                    const geometry = JSON.parse(apex.items.P1_POLYGON.value);
+                    
+                    /*
+                     * マップ・リージョンのレイヤーPolygonを取得します。
+                     */
+                    const layerId = mapRegion.call("getLayerIdByName", "Polygon");
+                    
+                    /*
+                     * 生成AIが返したポリゴンをレイヤーに追加します。
+                     */
+                    mapRegion.call("addFeature", layerId, {
+                        id: "polygon-" + Date.now(),
+                        geometry: geometry,
+                        properties: {}
+                    });
+                    
+                    /*
+                     * 追加したポリゴンを中心にズームします。
+                     */
+                    let minLng = Infinity, minLat = Infinity;
+                    let maxLng = -Infinity, maxLat = -Infinity;
+                    
+                    geometry.coordinates[0].forEach(function([lng, lat]) {
+                        minLng = Math.min(minLng, lng);
+                        minLat = Math.min(minLat, lat);
+                        maxLng = Math.max(maxLng, lng);
+                        maxLat = Math.max(maxLat, lat);
+                    });
+                    
+                    map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
+                        padding: 40,
+                        maxZoom: 15
+                    });
+                    ```
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+    )
+
+)
+
