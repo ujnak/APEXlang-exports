@@ -1,0 +1,5 @@
+authentication oracle-apexアカウント (
+    name: Oracle APEXアカウント
+    type: oracleApexAccounts
+)
+

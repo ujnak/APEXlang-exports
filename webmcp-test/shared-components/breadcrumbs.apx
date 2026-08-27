@@ -1,0 +1,44 @@
+breadcrumb ブレッドクラム (
+    name: ブレッドクラム
+
+    entry employee (
+        name: Employee
+        pageNumber: 2
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry employees (
+        name: Employees
+        pageNumber: 3
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 3
+            }
+        }
+    )
+
+    entry ホーム (
+        name: ホーム
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

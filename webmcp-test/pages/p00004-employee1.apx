@@ -1,0 +1,410 @@
+page 4 (
+    name: Employee
+    alias: EMPLOYEE1
+    title: Employee
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            js-dialog-class-t-Drawer--pullOutEnd
+        ]
+    }
+    dialog {
+        chained: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region employee (
+        name: Employee
+        type: form
+        source {
+            location: localDatabase
+            tableName: EMP
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region ボタン (
+        name: ボタン
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P4_COMM (
+        type: numberField
+        label {
+            label: Comm
+            alignment: right
+        }
+        layout {
+            sequence: 70
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee
+            column: COMM
+            dataType: number
+        }
+    )
+
+    pageItem P4_DEPTNO (
+        type: selectList
+        label {
+            label: Deptno
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @dept-dname
+        }
+        layout {
+            sequence: 80
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @employee
+            column: DEPTNO
+            dataType: number
+        }
+    )
+
+    pageItem P4_EMPNO (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @employee
+            slot: regionBody
+        }
+        source {
+            formRegion: @employee
+            column: EMPNO
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P4_ENAME (
+        type: textField
+        label {
+            label: Ename
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @employee
+            column: ENAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_HIREDATE (
+        type: datePicker
+        label {
+            label: Hiredate
+            alignment: right
+        }
+        layout {
+            sequence: 50
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee
+            column: HIREDATE
+            dataType: date
+        }
+    )
+
+    pageItem P4_JOB (
+        type: textField
+        label {
+            label: Job
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @employee
+            column: JOB
+            dataType: varchar2
+        }
+    )
+
+    pageItem P4_MGR (
+        type: selectList
+        label {
+            label: Mgr
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @emp-ename
+        }
+        layout {
+            sequence: 40
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @employee
+            column: MGR
+            dataType: number
+        }
+    )
+
+    pageItem P4_SAL (
+        type: numberField
+        label {
+            label: Sal
+            alignment: right
+        }
+        layout {
+            sequence: 60
+            region: @employee
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee
+            column: SAL
+            dataType: number
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: 取消
+        layout {
+            sequence: 10
+            region: @ボタン
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: 作成
+        layout {
+            sequence: 40
+            region: @ボタン
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P4_EMPNO
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: 削除
+        layout {
+            sequence: 20
+            region: @ボタン
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P4_EMPNO
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: 変更の適用
+        layout {
+            sequence: 30
+            region: @ボタン
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P4_EMPNO
+        }
+    )
+
+    process ダイアログを閉じる (
+        name: ダイアログを閉じる
+        type: closeDialog
+        execution {
+            sequence: 50
+        }
+        advanced {
+            executionMappingIdentifier: 10615765760290181
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process プロセス-フォームemployee (
+        name: プロセス・フォームEmployee
+        type: formAutoRowProcessing
+        formRegion: @employee
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 10615375767290180
+        }
+    )
+
+    process 初期化フォームemployee (
+        name: 初期化フォームEmployee
+        type: formInitialization
+        formRegion: @employee
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 10614967174290179
+        }
+    )
+
+)
+
