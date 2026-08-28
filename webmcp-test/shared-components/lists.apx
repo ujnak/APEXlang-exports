@@ -103,6 +103,28 @@ list ナビゲーション-メニュー (
         }
     )
 
+    entry employees-webmcp (
+        label: Employees - WebMCP
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 40
+        }
+        isCurrent {
+            type: pages
+            pages: [
+                5
+                6
+            ]
+        }
+        link {
+            target: {
+                page: 5
+            }
+        }
+    )
+
     entry ホーム (
         label: ホーム
         icon {

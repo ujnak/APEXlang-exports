@@ -14,6 +14,22 @@ breadcrumb ブレッドクラム (
         }
     )
 
+    entry employee-webmcp (
+        name: Employee - WebMCP
+        pageNumber: 6
+        execution {
+            sequence: 10
+        }
+        appearance {
+            parentEntry: @employees-webmcp
+        }
+        link {
+            target: {
+                page: 6
+            }
+        }
+    )
+
     entry employees (
         name: Employees
         pageNumber: 3
@@ -23,6 +39,19 @@ breadcrumb ブレッドクラム (
         link {
             target: {
                 page: 3
+            }
+        }
+    )
+
+    entry employees-webmcp (
+        name: Employees - WebMCP
+        pageNumber: 5
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 5
             }
         }
     )

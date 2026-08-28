@@ -22,7 +22,7 @@ page 3 (
             tableName: EMP
         }
         layout {
-            sequence: 10
+            sequence: 20
             slot: body
         }
         appearance {

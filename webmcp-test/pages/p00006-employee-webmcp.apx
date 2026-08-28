@@ -1,0 +1,723 @@
+page 6 (
+    name: Employee - WebMCP
+    alias: EMPLOYEE-WEBMCP
+    title: Employee - WebMCP
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region employee-webmcp (
+        name: Employee - WebMCP
+        type: form
+        source {
+            location: localDatabase
+            tableName: EMP
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region ブレッドクラム (
+        name: ブレッドクラム
+        type: breadcrumb
+        source {
+            breadcrumb: @ブレッドクラム
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P6_COMM (
+        type: numberField
+        label {
+            label: Comm
+            alignment: right
+        }
+        layout {
+            sequence: 70
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: COMM
+            dataType: number
+        }
+    )
+
+    pageItem P6_DEPTNO (
+        type: selectList
+        label {
+            label: Deptno
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @dept-dname
+        }
+        layout {
+            sequence: 80
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: DEPTNO
+            dataType: number
+        }
+    )
+
+    pageItem P6_EMPNO (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @employee-webmcp
+            slot: regionBody
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: EMPNO
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P6_ENAME (
+        type: textField
+        label {
+            label: Ename
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: ENAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_HIREDATE (
+        type: datePicker
+        label {
+            label: Hiredate
+            alignment: right
+        }
+        layout {
+            sequence: 50
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: HIREDATE
+            dataType: date
+        }
+    )
+
+    pageItem P6_JOB (
+        type: textField
+        label {
+            label: Job
+            alignment: right
+        }
+        layout {
+            sequence: 30
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 50
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: JOB
+            dataType: varchar2
+        }
+    )
+
+    pageItem P6_MGR (
+        type: selectList
+        label {
+            label: Mgr
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @emp-ename
+        }
+        layout {
+            sequence: 40
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: MGR
+            dataType: number
+        }
+    )
+
+    pageItem P6_SAL (
+        type: numberField
+        label {
+            label: Sal
+            alignment: right
+        }
+        layout {
+            sequence: 60
+            region: @employee-webmcp
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @employee-webmcp
+            column: SAL
+            dataType: number
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: 取消
+        layout {
+            sequence: 10
+            region: @employee-webmcp
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 5
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: 作成
+        layout {
+            sequence: 40
+            region: @employee-webmcp
+            slot: create
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P6_EMPNO
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: 削除
+        layout {
+            sequence: 20
+            region: @employee-webmcp
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P6_EMPNO
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: 変更の適用
+        layout {
+            sequence: 30
+            region: @employee-webmcp
+            slot: change
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P6_EMPNO
+        }
+    )
+
+    dynamicAction register-webmcp-tools (
+        name: Register WebMCP Tools
+        execution {
+            sequence: 10
+        }
+        when {
+            event: ready
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    (async () => {
+                      await document.modelContext.registerTool({
+                        name: 'register_employee',
+                        description: 'Register new employee information.',
+                        inputSchema: {
+                          type: 'object',
+                          properties: {
+                            ename: { type: 'string', description: 'employee name' },
+                            job: { type: 'string', description: 'job' },
+                            mgr: { type: 'string', description: 'empno of the manager' },
+                            hiredate: { type: 'string', description: 'hire date' },
+                            sal: { type: 'string', description: 'salary' },
+                            comm: { type: 'string', description: 'commission' },
+                            deptno: { type: 'string', description: 'departement number' }
+                          },
+                          required: [ 'ename','job','hiredate','sal','deptno' ]
+                        },
+                        execute: async ({ ename,job,mgr,hiredate,sal,comm,deptno }) => {
+                          try {
+                            apex.item('P6_ENAME').setValue(ename);
+                            apex.item('P6_JOB').setValue(job);
+                            apex.item('P6_MGR').setValue(mgr ?? '');
+                            apex.item('P6_HIREDATE').setValue(hiredate);
+                            apex.item('P6_SAL').setValue(sal);
+                            apex.item('P6_COMM').setValue(comm ?? '');
+                            apex.item('P6_DEPTNO').setValue(deptno);
+                    
+                            return await apex.server.process(
+                              'REGISTER_EMPLOYEE',
+                              {
+                                pageItems: [
+                                    'P6_ENAME',
+                                    'P6_JOB',
+                                    'P6_MGR',
+                                    'P6_HIREDATE',
+                                    'P6_SAL',
+                                    'P6_COMM',
+                                    'P6_DEPTNO'
+                                ]
+                              }
+                            );
+                          } catch (error) {
+                            return {
+                              success: false,
+                              errorCode: 'REQUEST_ERROR',
+                              message: error.message || 'Employee registration request failed.'
+                            };
+                          }
+                        }
+                      });
+                    })();
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+            clientSideCondition {
+                type: itemIsNull
+                item: P6_EMPNO
+            }
+        )
+
+        action native-javascript-code_1 (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    (async () => {
+                        /*
+                         * This tool updates the information for the employee already selected, 
+                         * so P6_EMPNO should not be included as a parameter.
+                         */
+                      await document.modelContext.registerTool({
+                        name: 'update_employee',
+                        description: 'Update existing employee information.',
+                        inputSchema: {
+                          type: 'object',
+                          properties: {
+                            ename: { type: 'string', description: 'employee name' },
+                            job: { type: 'string', description: 'job' },
+                            mgr: { type: 'string', description: 'empno of the manager' },
+                            hiredate: { type: 'string', description: 'hire date' },
+                            sal: { type: 'string', description: 'salary' },
+                            comm: { type: 'string', description: 'commission' },
+                            deptno: { type: 'string', description: 'departement number' }
+                          }
+                        },
+                        execute: async ({ ename,job,mgr,hiredate,sal,comm,deptno }) => {
+                          try {
+                            ename    != null && apex.item('P6_ENAME').setValue(ename);
+                            job      != null && apex.item('P6_JOB').setValue(job);
+                            mgr      != null && apex.item('P6_MGR').setValue(mgr);
+                            hiredate != null && apex.item('P6_HIREDATE').setValue(hiredate);
+                            sal      != null && apex.item('P6_SAL').setValue(sal);
+                            comm     != null && apex.item('P6_COMM').setValue(comm);
+                            deptno   != null && apex.item('P6_DEPTNO').setValue(deptno);
+                    
+                            return await apex.server.process(
+                              'UPDATE_EMPLOYEE',
+                              {
+                                pageItems: [
+                                    'P6_EMPNO',
+                                    'P6_ENAME',
+                                    'P6_JOB',
+                                    'P6_MGR',
+                                    'P6_HIREDATE',
+                                    'P6_SAL',
+                                    'P6_COMM',
+                                    'P6_DEPTNO'
+                                ]
+                              }
+                            );
+                          } catch (error) {
+                            return {
+                              success: false,
+                              errorCode: 'REQUEST_ERROR',
+                              message: error.message || 'Employee update request failed.'
+                            };
+                          }
+                        }
+                      });
+                      /*
+                       * This tool removes the employee currently selected in P6_EMPNO,
+                       * so no parameters need to be specified.
+                      */
+                      await document.modelContext.registerTool({
+                        name: 'delete_employee',
+                        description: 'delete existing employee information.',
+                        execute: async ({}) => {
+                          try {
+                            return await apex.server.process(
+                              'DELETE_EMPLOYEE',
+                              {
+                                pageItems: [
+                                    'P6_EMPNO'
+                                ]
+                              }
+                            );
+                          } catch (error) {
+                            return {
+                              success: false,
+                              errorCode: 'REQUEST_ERROR',
+                              message: error.message || 'Employee delete request failed.'
+                            };
+                          }
+                        }
+                      });
+                    })();
+                    ```
+            }
+            execution {
+                sequence: 20
+            }
+            clientSideCondition {
+                type: itemIsNotNull
+                item: P6_EMPNO
+            }
+        )
+
+    )
+
+    process delete-employee (
+        name: DELETE_EMPLOYEE
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_result  json_object_t;
+                begin
+                    delete from emp where empno = :P6_EMPNO;
+                
+                    l_result := json_object_t();
+                    l_result.put('success', true);
+                    l_result.put('empno', :P6_EMPNO);
+                    l_result.put('message', 'Employee deleted successfully.');
+                
+                    htp.p(l_result.to_clob());
+                
+                exception
+                    when others then
+                        l_result := json_object_t();
+                        l_result.put('success', false);
+                        l_result.put('message', sqlerrm);
+                
+                        htp.p(l_result.to_clob());
+                end;
+                ```
+        }
+        execution {
+            sequence: 30
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 11210550663536824
+        }
+    )
+
+    process register-employee (
+        name: REGISTER_EMPLOYEE
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                  l_empno   emp.empno%type;
+                  l_result  json_object_t;
+                begin
+                  insert into emp (
+                    ename,
+                    job,
+                    mgr,
+                    hiredate,
+                    sal,
+                    comm,
+                    deptno
+                  )
+                  values (
+                    upper(:P6_ENAME),
+                    :P6_JOB,
+                    :P6_MGR,
+                    :P6_HIREDATE,
+                    :P6_SAL,
+                    :P6_COMM,
+                    :P6_DEPTNO
+                  )
+                  returning empno into l_empno;
+                
+                  :P6_EMPNO := l_empno;
+                
+                  l_result := json_object_t();
+                  l_result.put('success', true);
+                  l_result.put('empno', l_empno);
+                  l_result.put('message', 'Employee registered successfully.');
+                
+                  htp.p(l_result.to_clob());
+                
+                exception
+                  when others then
+                    l_result := json_object_t();
+                    l_result.put('success', false);
+                    l_result.put('message', sqlerrm);
+                
+                    htp.p(l_result.to_clob());
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 11210368210536822
+        }
+    )
+
+    process update-employee (
+        name: UPDATE_EMPLOYEE
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                declare
+                    l_result  json_object_t;
+                begin
+                    update emp set
+                        ename = :P6_ENAME,
+                        job   = :P6_JOB,
+                        mgr   = :P6_MGR,
+                        hiredate  = :P6_HIREDATE,
+                        sal   = :P6_SAL,
+                        comm  = :P6_COMM,
+                        deptno = :P6_DEPTNO
+                    where empno = :P6_EMPNO;
+                
+                    l_result := json_object_t();
+                    l_result.put('success', true);
+                    l_result.put('empno', :P6_EMPNO);
+                    l_result.put('message', 'Employee updated successfully.');
+                
+                    htp.p(l_result.to_clob());
+                
+                exception
+                    when others then
+                        l_result := json_object_t();
+                        l_result.put('success', false);
+                        l_result.put('message', sqlerrm);
+                
+                        htp.p(l_result.to_clob());
+                end;
+                ```
+        }
+        execution {
+            sequence: 20
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 11210467118536823
+        }
+    )
+
+    process プロセス-フォームemployee-webmcp (
+        name: プロセス・フォームEmployee - WebMCP
+        type: formAutoRowProcessing
+        formRegion: @employee-webmcp
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 11417539361516570
+        }
+    )
+
+    process 初期化フォームemployee-webmcp (
+        name: 初期化フォームEmployee - WebMCP
+        type: formInitialization
+        formRegion: @employee-webmcp
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 11417116866516569
+        }
+    )
+
+    branch (
+        execution {
+            sequence: 1
+        }
+        behavior {
+            target: {
+                page: 5
+            }
+        }
+    )
+
+)
+
