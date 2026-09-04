@@ -1,0 +1,59 @@
+app CONTINUOUS-QUERY-NOTIFICATION-TEST (
+    name: Continuous Query Notification Test
+    logo {
+        type: text
+        text: Continuous Query Notification Test
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            t-TreeNav--styleA
+            js-navCollapsed--hidden
+        ]
+        list: @ナビゲーション-メニュー
+    }
+    navigationBar {
+        list: @ナビゲーション-バー
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apexアカウント
+    }
+    sessionStateProtection {
+        checksumSalt: 1714513FEB071521C98D3E4B41B0CF0A6205FDDCB37BF184C04E4AD7ED5762DC
+    }
+    globalization {
+        primaryLanguage: ja
+    }
+    runtime {
+        allowFeedback: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: Continuous Query Notification Test
+        }
+    )
+
+)
+

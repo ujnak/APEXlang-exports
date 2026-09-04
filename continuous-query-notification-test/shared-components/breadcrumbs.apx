@@ -1,0 +1,70 @@
+breadcrumb ブレッドクラム (
+    name: ブレッドクラム
+
+    entry definitions (
+        name: Definitions
+        pageNumber: 4
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 4
+            }
+        }
+    )
+
+    entry employees (
+        name: Employees
+        pageNumber: 2
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry notifications (
+        name: Notifications
+        pageNumber: 6
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 6
+            }
+        }
+    )
+
+    entry official-example (
+        name: Official Example
+        pageNumber: 7
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+    )
+
+    entry ホーム (
+        name: ホーム
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

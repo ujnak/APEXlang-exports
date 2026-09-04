@@ -1,0 +1,210 @@
+page 6 (
+    name: Notifications
+    alias: NOTIFICATIONS
+    title: Notifications
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region notifications (
+        name: Notifications
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: TCQ_NOTIFICATIONS
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: データが見つかりません。
+            whenMoreDataFound: このレポートの最大行数は#MAX_ROW_COUNT#行です。フィルタを適用して、問合せのレコード数を削減してください。
+        }
+        advanced {
+            savedReportMappingIdentifier: 11019527415074157
+        }
+
+        column ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 0
+            }
+            source {
+                primaryKey: true
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column MESSAGE (
+            type: plainText
+            heading {
+                heading: Message
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column RECEIVER (
+            type: plainText
+            heading {
+                heading: Receiver
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column SENT_DATE (
+            type: plainText
+            heading {
+                heading: Sent Date
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: DATE
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn ID (
+                sequence: 1
+            )
+
+            displayColumn MESSAGE (
+                sequence: 3
+            )
+
+            displayColumn RECEIVER (
+                sequence: 2
+            )
+
+            displayColumn SENT_DATE (
+                sequence: 4
+            )
+
+        )
+
+    )
+
+    region ブレッドクラム (
+        name: ブレッドクラム
+        type: breadcrumb
+        source {
+            breadcrumb: @ブレッドクラム
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    button reset_1 (
+        buttonName: RESET
+        label: Reset
+        layout {
+            sequence: 10
+            region: @ブレッドクラム
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: 本当に削除しますか？
+            style: danger
+        }
+
+        triggerAction native-execute-plsql-code (
+            action: executeServerSideCode
+            settings {
+                plsqlCode: delete from tcq_notifications;
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        triggerAction native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @notifications
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+    )
+
+)
+

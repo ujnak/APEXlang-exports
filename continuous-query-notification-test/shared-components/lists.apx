@@ -1,0 +1,163 @@
+list ナビゲーション-バー (
+    name: ナビゲーション・バー
+
+    entry app-user (
+        label: &APP_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+    )
+
+    entry list_item (
+        label: ---
+        layout {
+            sequence: 20
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+    entry サインアウト (
+        label: サインアウト
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 30
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+)
+
+list ナビゲーション-メニュー (
+    name: ナビゲーション・メニュー
+
+    entry definitions (
+        label: Definitions
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 30
+        }
+        isCurrent {
+            type: pages
+            pages: [
+                4
+                5
+            ]
+        }
+        link {
+            target: {
+                page: 4
+            }
+        }
+    )
+
+    entry employees (
+        label: Employees
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 20
+        }
+        isCurrent {
+            type: pages
+            pages: [
+                2
+                3
+            ]
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry notifications (
+        label: Notifications
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 40
+        }
+        isCurrent {
+            type: pages
+            pages: 6
+        }
+        link {
+            target: {
+                page: 6
+            }
+        }
+    )
+
+    entry official-example (
+        label: Official Example
+        icon {
+            imageIconCssClasses: fa-file-o
+        }
+        layout {
+            sequence: 50
+        }
+        isCurrent {
+            type: pages
+            pages: 7
+        }
+        link {
+            target: {
+                page: 7
+            }
+        }
+    )
+
+    entry ホーム (
+        label: ホーム
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

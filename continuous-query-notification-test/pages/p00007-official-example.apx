@@ -1,0 +1,518 @@
+page 7 (
+    name: Official Example
+    alias: OFFICIAL-EXAMPLE
+    title: Official Example
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region nfevents (
+        name: NFEVENTS
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: NFEVENTS
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        advanced {
+            savedReportMappingIdentifier: 10855350242040428
+        }
+
+        column EVENT_TYPE (
+            type: plainText
+            heading {
+                heading: Event Type
+                alignment: end
+            }
+            layout {
+                sequence: 20
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column REGID (
+            type: plainText
+            heading {
+                heading: Regid
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 5
+            }
+
+            displayColumn EVENT_TYPE (
+                sequence: 2
+            )
+
+            displayColumn REGID (
+                sequence: 1
+            )
+
+        )
+
+    )
+
+    region nfqueries (
+        name: NFQUERIES
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: NFQUERIES
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        advanced {
+            savedReportMappingIdentifier: 10855350242040428
+        }
+
+        column QID (
+            type: plainText
+            heading {
+                heading: Qid
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column QOP (
+            type: plainText
+            heading {
+                heading: Qop
+                alignment: end
+            }
+            layout {
+                sequence: 20
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn QID (
+                sequence: 1
+            )
+
+            displayColumn QOP (
+                sequence: 2
+            )
+
+        )
+
+    )
+
+    region nfrowchanges (
+        name: NFROWCHANGES
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: NFROWCHANGES
+        }
+        layout {
+            sequence: 40
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        advanced {
+            savedReportMappingIdentifier: 10855350242040428
+        }
+
+        column QID (
+            type: plainText
+            heading {
+                heading: Qid
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column ROW_ID (
+            type: plainText
+            heading {
+                heading: Row Id
+            }
+            layout {
+                sequence: 30
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column TABLE_NAME (
+            type: plainText
+            heading {
+                heading: Table Name
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn QID (
+                sequence: 1
+            )
+
+            displayColumn ROW_ID (
+                sequence: 3
+            )
+
+            displayColumn TABLE_NAME (
+                sequence: 2
+            )
+
+        )
+
+    )
+
+    region nftablechanges (
+        name: NFTABLECHANGES
+        type: interactiveReport
+        source {
+            location: localDatabase
+            tableName: NFTABLECHANGES
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        advanced {
+            savedReportMappingIdentifier: 10855350242040428
+        }
+
+        column QID (
+            type: plainText
+            heading {
+                heading: Qid
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column TABLE_NAME (
+            type: plainText
+            heading {
+                heading: Table Name
+            }
+            layout {
+                sequence: 20
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column TABLE_OPERATION (
+            type: plainText
+            heading {
+                heading: Table Operation
+                alignment: end
+            }
+            layout {
+                sequence: 30
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        page {
+            size: a4
+            units: millimeters
+            width: 297
+            height: 210
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn QID (
+                sequence: 1
+            )
+
+            displayColumn TABLE_NAME (
+                sequence: 2
+            )
+
+            displayColumn TABLE_OPERATION (
+                sequence: 3
+            )
+
+        )
+
+    )
+
+    region ブレッドクラム (
+        name: ブレッドクラム
+        type: breadcrumb
+        source {
+            breadcrumb: @ブレッドクラム
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    button reset (
+        buttonName: RESET
+        label: Reset
+        layout {
+            sequence: 10
+            region: @ブレッドクラム
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: 本当に削除しますか？
+            style: danger
+        }
+
+        triggerAction native-execute-plsql-code (
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    delete from nfevents;
+                    delete from nfqueries;
+                    delete from nftablechanges;
+                    delete from nfrowchanges;
+                    ```
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+        triggerAction native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nfevents
+            }
+            execution {
+                sequence: 20
+            }
+        )
+
+        triggerAction native-refresh_1 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nfqueries
+            }
+            execution {
+                sequence: 30
+            }
+        )
+
+        triggerAction native-refresh_1_1 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nftablechanges
+            }
+            execution {
+                sequence: 40
+            }
+        )
+
+        triggerAction native-refresh_1_1_1 (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @nfrowchanges
+            }
+            execution {
+                sequence: 50
+            }
+        )
+
+    )
+
+)
+

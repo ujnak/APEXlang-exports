@@ -1,0 +1,36 @@
+installScript TCQ.sql (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: tcq-sql.sql
+    }
+)
+
+installScript TCQ_CALLBACK.pls (
+    execution {
+        sequence: 40
+    }
+    script {
+        contentFile: tcq-callback-pls.sql
+    }
+)
+
+installScript TCQ_OP.pkb (
+    execution {
+        sequence: 30
+    }
+    script {
+        contentFile: tcq-op-pkb.sql
+    }
+)
+
+installScript TCQ_OP.pks (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: tcq-op-pks.sql
+    }
+)
+

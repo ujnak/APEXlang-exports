@@ -1,0 +1,34 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: Continuous Query Notification Test
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region continuous-query-notification-test (
+        name: Continuous Query Notification Test
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+)
+

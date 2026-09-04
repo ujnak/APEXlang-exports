@@ -1,0 +1,461 @@
+page 5 (
+    name: Definition
+    alias: DEFINITION
+    title: Definition
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/drawer
+        templateOptions: [
+            #DEFAULT#
+            js-dialog-class-t-Drawer--pullOutEnd
+        ]
+    }
+    dialog {
+        chained: false
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region definition (
+        name: Definition
+        type: form
+        source {
+            location: localDatabase
+            tableName: TCQ_NOTIFICATION_DEFS
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    region ボタン (
+        name: ボタン
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P5_ID (
+        type: hidden
+        layout {
+            sequence: 10
+            region: @definition
+            slot: regionBody
+        }
+        source {
+            formRegion: @definition
+            column: ID
+            dataType: number
+            queryOnly: true
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P5_OWNER (
+        type: textField
+        label {
+            label: Owner
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @definition
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 50
+        }
+        source {
+            formRegion: @definition
+            column: OWNER
+            dataType: varchar2
+        }
+    )
+
+    pageItem P5_QUERY_ID_COMM (
+        type: numberField
+        label {
+            label: Query Id Comm
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            region: @definition
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @definition
+            column: QUERY_ID_COMM
+            dataType: number
+        }
+        config {
+            buildOption: @commented-out
+        }
+    )
+
+    pageItem P5_QUERY_ID_SAL (
+        type: numberField
+        label {
+            label: Query Id Sal
+            alignment: left
+        }
+        layout {
+            sequence: 40
+            region: @definition
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @definition
+            column: QUERY_ID_SAL
+            dataType: number
+        }
+        config {
+            buildOption: @commented-out
+        }
+    )
+
+    pageItem P5_REG_ID (
+        type: numberField
+        label {
+            label: Reg Id
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            region: @definition
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 255
+        }
+        source {
+            formRegion: @definition
+            column: REG_ID
+            dataType: number
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P5_ID
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: 取消
+        layout {
+            sequence: 10
+            region: @ボタン
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: triggerAction
+        }
+
+        triggerAction native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: 作成
+        layout {
+            sequence: 40
+            region: @ボタン
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: itemIsNull
+            item: P5_ID
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: 削除
+        layout {
+            sequence: 20
+            region: @ボタン
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P5_ID
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: 変更の適用
+        layout {
+            sequence: 30
+            region: @ボタン
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: itemIsNotNull
+            item: P5_ID
+        }
+    )
+
+    process add (
+        name: add
+        type: invokeApi
+        invoke {
+            package: TCQ_OP
+            procedureOrFunction: REGISTER
+        }
+        execution {
+            sequence: 30
+        }
+        advanced {
+            executionMappingIdentifier: 10854988019040424
+        }
+        serverSideCondition {
+            whenButtonPressed: @save
+        }
+
+        parameter p_reg_id (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: P5_REG_ID
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_username (
+            value {
+                type: item
+                item: P5_OWNER
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process deregister (
+        name: Deregister
+        type: invokeApi
+        invoke {
+            package: TCQ_OP
+            procedureOrFunction: DEREGISTER
+        }
+        execution {
+            sequence: 40
+        }
+        advanced {
+            executionMappingIdentifier: 10852765954040402
+        }
+        serverSideCondition {
+            whenButtonPressed: @delete
+        }
+
+        parameter p_reg_id (
+            parameter {
+                dataType: number
+            }
+            value {
+                type: item
+                item: P5_REG_ID
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process register (
+        name: Register
+        type: invokeApi
+        invoke {
+            package: TCQ_OP
+            procedureOrFunction: REGISTER
+        }
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 11213147209536850
+        }
+        serverSideCondition {
+            whenButtonPressed: @create
+        }
+
+        parameter p_reg_id (
+            parameter {
+                dataType: number
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P5_REG_ID
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_username (
+            value {
+                type: item
+                item: P5_OWNER
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+    )
+
+    process ダイアログを閉じる (
+        name: ダイアログを閉じる
+        type: closeDialog
+        execution {
+            sequence: 60
+        }
+        advanced {
+            executionMappingIdentifier: 10844461369035648
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,DELETE
+        }
+    )
+
+    process プロセス-フォームdefinition (
+        name: プロセス・フォームDefinition
+        type: formAutoRowProcessing
+        formRegion: @definition
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 10844032266035648
+        }
+        config {
+            buildOption: @commented-out
+        }
+    )
+
+    process 初期化フォームdefinition (
+        name: 初期化フォームDefinition
+        type: formInitialization
+        formRegion: @definition
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+        advanced {
+            executionMappingIdentifier: 10843675132035647
+        }
+    )
+
+)
+
