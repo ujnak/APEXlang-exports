@@ -1,0 +1,58 @@
+app NDMM_MONUMENTS (
+    name: 自然災害伝承碑マップ
+    logo {
+        type: text
+        text: &APP_TITLE.
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            js-defaultCollapsed
+            js-navCollapsed--hidden
+            t-TreeNav--styleA
+        ]
+        list: @navigation-menu
+    }
+    navigationBar {
+        list: @navigation-bar
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: YYYY/MM/DD
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apex-accounts
+    }
+    authorization {
+        sourceForRoleOrGroupSchemes: authenticationScheme
+    }
+    sessionStateProtection {
+        checksumSalt: BE8E26C19CF3511FBFEB1A6F9F79DA741A84B7ED70299369E025F6E56E2FFF65
+    }
+    sessionManagement {
+        maxSessionLength: 28800
+        maxSessionIdleTime: 3600
+    }
+    runtime {
+        allowFeedback: true
+        compatibilityMode: 24.2
+    }
+)
+

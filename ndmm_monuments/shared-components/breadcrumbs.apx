@@ -1,0 +1,18 @@
+breadcrumb breadcrumb (
+    name: Breadcrumb
+
+    entry ndmm-map-entry (
+        name: 自然災害伝承碑マップ
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

@@ -1,0 +1,604 @@
+page 1 (
+    name: 自然災害伝承碑マップ
+    alias: HOME
+    title: 自然災害伝承碑マップ
+    pageGroup: @maps
+    appearance {
+        pageTemplate: @/left-side-column
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+        warnOnUnsavedChanges: false
+    }
+    css {
+        inline:
+            ```css
+            #monument-map .maplibregl-popup,
+            #monument-map .mapboxgl-popup,
+            #monument-map .a-Map-infoWindow {
+              width: min(300px, calc(100vw - 32px));
+              max-width: min(300px, calc(100vw - 32px)) !important;
+            }
+            
+            #monument-map .maplibregl-popup-content,
+            #monument-map .mapboxgl-popup-content {
+              box-sizing: border-box;
+              width: 100%;
+            }
+            
+            #monument-map .ndmm-popup {
+              box-sizing: border-box;
+              width: 100%;
+              max-height: 250px;
+              overflow-y: auto;
+              font-size: calc(1rem - 2pt);
+              line-height: 1.35;
+            }
+            
+            #monument-map .ndmm-popup h3 {
+              margin-block: 0 0.5rem;
+              font-size: calc(1.5rem - 4pt);
+            }
+            
+            #monument-map .ndmm-popup dl {
+              margin-block: 0;
+            }
+            ```
+    }
+    security {
+        authorizationScheme: mustNotBePublicUser
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+    help {
+        helpText: 災害種別または災害名で自然災害伝承碑を絞り込めます。地図のポイントを選択すると碑の詳細が表示されます。「地図範囲をレポートに反映」を選択すると、その時点で地図に表示されている範囲の碑だけを一覧表示します。
+    }
+
+    region data-attribution (
+        name: 出典・利用上の注意
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <section class="ndmm-attribution">
+                  <p><strong>出典：</strong><a href="https://www.gsi.go.jp/bousaichiri/denshouhi.html" target="_blank" rel="noopener noreferrer">国土地理院ウェブサイト「自然災害伝承碑」</a></p>
+                  <p><strong>加工・編集：</strong>国土地理院の「自然災害伝承碑データ」をもとに、列名の英語化、空白値のNULL化、公開日のDATE変換、座標のSDO_GEOMETRY（SRID 4326）変換を行い、Oracle APEXで可視化しました。</p>
+                  <p><a href="https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html" target="_blank" rel="noopener noreferrer">国土地理院コンテンツ利用規約</a>およびデータの利用上の注意をご確認ください。同一の災害でも災害名の表記が異なる場合があります。写真など第三者が権利を有するコンテンツは本アプリには含めていません。</p>
+                </section>
+                ```
+        }
+        layout {
+            sequence: 30
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            landmarkLabel: 出典と利用上の注意
+        }
+    )
+
+    region monument-filters (
+        name: 絞り込み
+        type: facetedSearch
+        source {
+            filteredRegion: @monument-report
+        }
+        layout {
+            sequence: 10
+            slot: leftColumn
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        accessibility {
+            landmarkLabel: 自然災害伝承碑の絞り込み条件
+        }
+        advanced {
+            htmlDomId: monument-filters
+        }
+        settings {
+            compactNosThreshold: 10000
+            showCurrentFacets: true
+            showTotalRowCount: true
+        }
+
+        facet P1_DISASTER_NAME (
+            type: checkboxGroup
+            label {
+                label: 災害名
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 20
+            }
+            listEntries {
+                showSelectedFirst: true
+                maxDisplayedEntries: 10
+                displayFilterInitially: true
+            }
+            source {
+                databaseColumn: DISASTER_NAME
+            }
+        )
+
+        facet P1_DISASTER_TYPE (
+            type: checkboxGroup
+            label {
+                label: 災害種別
+            }
+            lov {
+                type: distinctValues
+            }
+            layout {
+                sequence: 10
+            }
+            listEntries {
+                showSelectedFirst: true
+                maxDisplayedEntries: 10
+                displayFilterInitially: true
+            }
+            source {
+                databaseColumn: DISASTER_TYPE
+            }
+            multipleValues {
+                type: delimitedList
+                separator: ・
+                trimWhitespace: true
+                filterCombination: and
+            }
+        )
+
+    )
+
+    region monument-map (
+        name: 自然災害伝承碑マップ
+        type: map
+        source {
+            pageItemsToSubmit: [
+                P1_DISASTER_TYPE
+                P1_DISASTER_NAME
+            ]
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            htmlDomId: monument-map
+        }
+        map {
+            height: 560
+        }
+        controls {
+            options: scaleBar
+        }
+        boundingBox {
+            currentBoundsItem: P1_MAP_BBOX
+        }
+
+        layer monuments (
+            name: 自然災害伝承碑
+            layout {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select monument_id,
+                           monument_name,
+                           construction_year,
+                           location_description,
+                           disaster_name,
+                           disaster_type,
+                           legacy_content,
+                           publication_date,
+                           revision_publication_date,
+                           restrictions,
+                           geometry
+                      from ndmm_monuments
+                     where (
+                               :P1_DISASTER_TYPE is null
+                               or not exists (
+                                   select 1
+                                     from table(apex_string.split(:P1_DISASTER_TYPE, ':')) selected_type
+                                    where not exists (
+                                              select 1
+                                                from table(apex_string.split(disaster_type, '・')) monument_type
+                                               where trim(monument_type.column_value) = trim(selected_type.column_value)
+                                          )
+                               )
+                           )
+                       and (
+                               :P1_DISASTER_NAME is null
+                               or disaster_name in (
+                                   select column_value
+                                     from table(apex_string.split(:P1_DISASTER_NAME, ':'))
+                               )
+                           )
+                    ```
+            }
+            columnMapping {
+                geometryColumn: GEOMETRY
+                primaryKeyColumn: MONUMENT_ID
+            }
+            tooltip {
+                column: MONUMENT_NAME
+            }
+            infoWindow {
+                advancedFormatting: true
+                htmlExpression:
+                    ```html
+                    <article class="ndmm-popup">
+                      <h3>&MONUMENT_NAME!HTML.</h3>
+                      <dl>
+                        <dt>碑ID</dt><dd>&MONUMENT_ID!HTML.</dd>
+                        <dt>建立年</dt><dd>&CONSTRUCTION_YEAR!HTML.</dd>
+                        <dt>所在地</dt><dd>&LOCATION_DESCRIPTION!HTML.</dd>
+                        <dt>災害名</dt><dd>&DISASTER_NAME!HTML.</dd>
+                        <dt>災害種別</dt><dd>&DISASTER_TYPE!HTML.</dd>
+                        <dt>伝承内容</dt><dd>&LEGACY_CONTENT!HTML.</dd>
+                        <dt>公開日</dt><dd>&PUBLICATION_DATE!HTML.</dd>
+                        <dt>修正等公開日</dt><dd>&REVISION_PUBLICATION_DATE!HTML.</dd>
+                        <dt>制限事項</dt><dd>&RESTRICTIONS!HTML.</dd>
+                      </dl>
+                    </article>
+                    ```
+            }
+        )
+
+    )
+
+    region monument-report (
+        name: 表示中の自然災害伝承碑
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select monument_id,
+                       monument_name,
+                       construction_year,
+                       location_description,
+                       disaster_name,
+                       disaster_type,
+                       legacy_content,
+                       publication_date,
+                       revision_publication_date,
+                       restrictions
+                  from ndmm_monuments
+                 where (
+                           :P1_REPORT_BBOX is null
+                           or sdo_anyinteract(
+                                  geometry,
+                                  sdo_util.from_geojson(:P1_REPORT_BBOX)
+                              ) = 'TRUE'
+                       )
+                 order by monument_id
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+            ]
+        }
+        advanced {
+            htmlDomId: monument-report
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--horizontalBorders
+            ]
+        }
+        pagination {
+            type: rowRangesXToYOfZWithPagination
+            displayPosition: topAndBottomRight
+        }
+        messages {
+            whenNoDataFound: 条件に一致する自然災害伝承碑はありません。
+        }
+
+        column CONSTRUCTION_YEAR (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: 建立年
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+        column DISASTER_NAME (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: 災害名
+            }
+            layout {
+                sequence: 50
+            }
+        )
+
+        column DISASTER_TYPE (
+            reportColumnQueryId: 6
+            derivedColumn: N
+            heading {
+                heading: 災害種別
+            }
+            layout {
+                sequence: 60
+            }
+        )
+
+        column LEGACY_CONTENT (
+            reportColumnQueryId: 7
+            derivedColumn: N
+            heading {
+                heading: 伝承内容
+            }
+            layout {
+                sequence: 70
+            }
+        )
+
+        column LOCATION_DESCRIPTION (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: 所在地
+            }
+            layout {
+                sequence: 40
+            }
+        )
+
+        column MONUMENT_ID (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: 碑ID
+            }
+            layout {
+                sequence: 10
+            }
+        )
+
+        column MONUMENT_NAME (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: 碑名
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column PUBLICATION_DATE (
+            reportColumnQueryId: 8
+            derivedColumn: N
+            heading {
+                heading: 公開日
+            }
+            layout {
+                sequence: 80
+            }
+            appearance {
+                formatMask: YYYY/MM/DD
+            }
+        )
+
+        column RESTRICTIONS (
+            reportColumnQueryId: 10
+            derivedColumn: N
+            heading {
+                heading: 制限事項
+            }
+            layout {
+                sequence: 100
+            }
+        )
+
+        column REVISION_PUBLICATION_DATE (
+            reportColumnQueryId: 9
+            derivedColumn: N
+            heading {
+                heading: 修正等公開日
+            }
+            layout {
+                sequence: 90
+            }
+        )
+
+    )
+
+    region ndmm-map-title (
+        name: 自然災害伝承碑マップ
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_MAP_BBOX (
+        type: hidden
+        layout {
+            sequence: 20
+            slot: body
+        }
+        comments {
+            comments: Client-owned current map bounds maintained by the APEX Map region for a same-page dynamic action. Unrestricted session state is required because the browser supplies the GeoJSON value.
+        }
+    )
+
+    pageItem P1_REPORT_BBOX (
+        type: hidden
+        layout {
+            sequence: 10
+            slot: body
+        }
+        comments {
+            comments: Client-owned map extent populated only by the same-page dynamic action apply-map-extent-to-report. Unrestricted protection is required so the browser can submit the selected GeoJSON bounding box during the report refresh.
+        }
+    )
+
+    button apply-map-extent (
+        buttonName: APPLY_MAP_EXTENT
+        label: 地図範囲をレポートに反映
+        layout {
+            sequence: 10
+            region: @monument-report
+            slot: edit
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    dynamicAction apply-map-extent-to-report (
+        name: 地図範囲をレポートに反映
+        execution {
+            sequence: 20
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @apply-map-extent
+        }
+
+        action capture-map-extent (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    const mapBbox = apex.item("P1_MAP_BBOX").getValue();
+                    
+                    if (!mapBbox) {
+                      throw new Error("地図の表示範囲を取得できませんでした。");
+                    }
+                    apex.item("P1_REPORT_BBOX").setValue(mapBbox);
+                    
+                    const reportRegion = apex.region("monument-report");
+                    const facetRegion = apex.region("monument-filters");
+                    
+                    if (!reportRegion || !facetRegion) {
+                      throw new Error("レポートまたはファセット・リージョンを取得できませんでした。");
+                    }
+                    
+                    apex.server.process(
+                      "SYNC_REPORT_BBOX",
+                      { pageItems: "#P1_REPORT_BBOX" },
+                      { dataType: "json" }
+                    ).done(function () {
+                      apex.jQuery("#monument-report").one("apexafterrefresh.ndmmMapExtent", function () {
+                        facetRegion.refresh();
+                      });
+                      reportRegion.refresh();
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                      apex.message.clearErrors();
+                      apex.message.showErrors([{
+                        type: "error",
+                        location: ["page"],
+                        message: "地図範囲を反映できませんでした: " + (errorThrown || textStatus),
+                        unsafe: false
+                      }]);
+                    });
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    dynamicAction refresh-map-on-facets-change (
+        name: ファセット変更時にマップを更新
+        execution {
+            sequence: 10
+        }
+        when {
+            event: region/facetedSearch/facetschange
+            selectionType: region
+            region: @monument-filters
+        }
+
+        action refresh-monument-map (
+            name: 自然災害伝承碑マップを更新
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @monument-map
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process sync-report-bbox (
+        name: SYNC_REPORT_BBOX
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                apex_json.open_object;
+                apex_json.write('status', 'ok');
+                apex_json.close_object;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 14705584826412873
+        }
+        security {
+            authorizationScheme: mustNotBePublicUser
+        }
+    )
+
+)
+

@@ -1,0 +1,10 @@
+installScript "Create NDMM_MONUMENTS" (
+    execution {
+        sequence: 10
+    }
+    script {
+        type: table
+        contentFile: create-ndmm-monuments.sql
+    }
+)
+
