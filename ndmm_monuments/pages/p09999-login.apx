@@ -133,7 +133,7 @@ page 9999 (
     )
 
     process clear-page-s-cache (
-        name: Clear Page Cache
+        name: Clear Page(s) Cache
         type: clearSessionState
         execution {
             sequence: 30
@@ -241,7 +241,7 @@ page 9999 (
         parameter p_username (
             value {
                 type: expression
-                plsqlExpression: lower(:P9999_USERNAME)
+                plsqlExpression: lower( :P9999_USERNAME )
             }
             advanced {
                 displaySequence: 1

@@ -1,7 +1,7 @@
 breadcrumb breadcrumb (
     name: Breadcrumb
 
-    entry ndmm-map-entry (
+    entry home (
         name: 自然災害伝承碑マップ
         pageNumber: 1
         execution {

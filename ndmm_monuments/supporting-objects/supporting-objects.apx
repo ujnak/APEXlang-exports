@@ -1,7 +1,4 @@
 supportingObject (
-    installation {
-        objectNames: "[\"NDMM_MONUMENTS\"]"
-    }
     advanced {
         includeInAppExport: true
     }

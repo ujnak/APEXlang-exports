@@ -33,7 +33,7 @@ app NDMM_MONUMENTS (
         addBuiltWithApexToFooter: false
     }
     appFormatMasks {
-        date: YYYY/MM/DD
+        date: DS
         timestamp: DS
         timestampTimeZone: DS
     }
@@ -49,6 +49,9 @@ app NDMM_MONUMENTS (
     sessionManagement {
         maxSessionLength: 28800
         maxSessionIdleTime: 3600
+    }
+    globalization {
+        primaryLanguage: ja
     }
     runtime {
         allowFeedback: true

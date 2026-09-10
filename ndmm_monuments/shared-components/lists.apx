@@ -62,10 +62,10 @@ list navigation-bar (
 list navigation-menu (
     name: Navigation Menu
 
-    entry ndmm-map (
+    entry home (
         label: 自然災害伝承碑マップ
         icon {
-            imageIconCssClasses: fa-map-marker
+            imageIconCssClasses: fa-home
         }
         layout {
             sequence: 10
