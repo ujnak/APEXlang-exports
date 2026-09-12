@@ -1,0 +1,27 @@
+installScript nop-passengers-table (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: nop-passengers-table.sql
+    }
+)
+
+installScript nop-spatial-index (
+    execution {
+        sequence: 30
+    }
+    script {
+        contentFile: nop-spatial-index.sql
+    }
+)
+
+installScript nop-spatial-metadata (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: nop-spatial-metadata.sql
+    }
+)
+

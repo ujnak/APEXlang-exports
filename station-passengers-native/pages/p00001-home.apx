@@ -1,0 +1,381 @@
+page 1 (
+    name: 駅の乗降客数マップ
+    alias: HOME
+    title: 駅の乗降客数マップ
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    javaScript {
+        executeWhenPageLoads:
+            ```javascript-browser
+            apex.jQuery('#station-map').off('spatialmapobjectclick.nopStation').on('spatialmapobjectclick.nopStation', function(event, data) {
+                if (!data || data.id == null || !/^\d+$/.test(String(data.id))) { return; }
+                const station = apex.item('P1_STATION'), id = String(data.id);
+                if (String(station.getValue()) === id) { return; }
+                station.setValue(id, '駅の情報を読み込み中…', true);
+                apex.event.trigger(station.node, 'change', { source: 'station-map' });
+            });
+            ```
+    }
+    css {
+        inline: "#P1_PASSENGERS{font-size:28px;line-height:1.5;font-weight:700;color:#116e63;white-space:normal} #P1_NAME{font-size:20px;font-weight:600}"
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+    }
+
+    region station-controls (
+        name: 駅を探す
+        type: staticContent
+        source {
+            htmlCode: <p>年度と駅を選択してください。地図の駅の線にカーソルを合わせると乗降客数を確認できます。</p><p class="u-textSmall">出典：<a href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-S12-2024.html" target="_blank" rel="noreferrer">国土交通省 国土数値情報</a>（CC BY 4.0）。駅別乗降客数を加工。数値は人／日。事業者によって算出基準が異なります。選択年度に存在しない駅の線は表示しません。</p>
+        }
+        layout {
+            sequence: 10
+            slot: body
+            columnSpan: 3
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region station-map (
+        name: 駅の線と乗降客数
+        type: map
+        layout {
+            sequence: 20
+            slot: body
+            startNewRow: false
+            columnSpan: 9
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        advanced {
+            htmlDomId: station-map
+        }
+        map {
+            height: 700
+        }
+        controls {
+            options: [
+                mousewheelZoom
+                scaleBar
+                rectangleZoom
+                getBrowserLocation
+            ]
+        }
+        initialPositionAndZoom {
+            getPositionFromBrowser: true
+            type: staticValues
+            longitude: 138
+            latitude: 37
+            zoomLevel: 5
+        }
+
+        layer station-lines (
+            name: 駅の線
+            layerType: lines
+            layout {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery: with stations as (select t.feature_id,t.s12_001 station_name,t.s12_002 operator_name,t.s12_003 line_name,t.geom,case to_number(:P1_YEAR) when 2011 then t.S12_006 when 2012 then t.S12_010 when 2013 then t.S12_014 when 2014 then t.S12_018 when 2015 then t.S12_022 when 2016 then t.S12_026 when 2017 then t.S12_030 when 2018 then t.S12_034 when 2019 then t.S12_038 when 2020 then t.S12_042 when 2021 then t.S12_046 when 2022 then t.S12_050 when 2023 then t.S12_054 when 2024 then t.S12_058 end duplicate_code,case to_number(:P1_YEAR) when 2011 then t.S12_007 when 2012 then t.S12_011 when 2013 then t.S12_015 when 2014 then t.S12_019 when 2015 then t.S12_023 when 2016 then t.S12_027 when 2017 then t.S12_031 when 2018 then t.S12_035 when 2019 then t.S12_039 when 2020 then t.S12_043 when 2021 then t.S12_047 when 2022 then t.S12_051 when 2023 then t.S12_055 when 2024 then t.S12_059 end availability_code,case to_number(:P1_YEAR) when 2011 then t.S12_008 when 2012 then t.S12_012 when 2013 then t.S12_016 when 2014 then t.S12_020 when 2015 then t.S12_024 when 2016 then t.S12_028 when 2017 then t.S12_032 when 2018 then t.S12_036 when 2019 then t.S12_040 when 2020 then t.S12_044 when 2021 then t.S12_048 when 2022 then t.S12_052 when 2023 then t.S12_056 when 2024 then t.S12_060 end remarks,case to_number(:P1_YEAR) when 2011 then t.S12_009 when 2012 then t.S12_013 when 2013 then t.S12_017 when 2014 then t.S12_021 when 2015 then t.S12_025 when 2016 then t.S12_029 when 2017 then t.S12_033 when 2018 then t.S12_037 when 2019 then t.S12_041 when 2020 then t.S12_045 when 2021 then t.S12_049 when 2022 then t.S12_053 when 2023 then t.S12_057 when 2024 then t.S12_061 end passengers_raw from nop_passengers t where source_sha256='a1938a312fb8c081b2ee6963c9023eeec02870b87a307ea5b3bcc18a029f5987') select feature_id, sdo_cs.transform(geom,4326) geometry, station_name, operator_name, line_name, :P1_YEAR data_year, case when duplicate_code=1 and availability_code=1 then to_char(passengers_raw,'FM999G999G999G990','NLS_NUMERIC_CHARACTERS=''.,''')||' 人／日' when duplicate_code=3 or availability_code=4 then '選択年度に駅なし' when duplicate_code=2 then '他路線駅に記載' when availability_code=2 then 'データなし' when availability_code=3 then '非公開' else '元データの状態コード未定義' end passenger_label from stations where duplicate_code<>3 and availability_code<>4
+            }
+            columnMapping {
+                geometryColumn: GEOMETRY
+                primaryKeyColumn: FEATURE_ID
+            }
+            appearance {
+                strokeColor: #187f73
+                strokeWidth: 6
+            }
+            tooltip {
+                advancedFormatting: true
+                htmlExpression: <strong>&STATION_NAME!HTML.</strong><br>&OPERATOR_NAME!HTML. · &LINE_NAME!HTML.<br>&DATA_YEAR!HTML.年度<br><strong>&PASSENGER_LABEL!HTML.</strong>
+            }
+        )
+
+    )
+
+    pageItem P1_DATA_YEAR (
+        type: displayOnly
+        label {
+            label: 年度
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 50
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_LAT (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 90
+            region: @station-controls
+            slot: regionBody
+        }
+    )
+
+    pageItem P1_LINE (
+        type: displayOnly
+        label {
+            label: 事業者・路線
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 40
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_LON (
+        type: hidden
+        settings {
+            valueProtected: false
+        }
+        layout {
+            sequence: 80
+            region: @station-controls
+            slot: regionBody
+        }
+    )
+
+    pageItem P1_NAME (
+        type: displayOnly
+        label {
+            label: 駅名
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 30
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_PASSENGERS (
+        type: displayOnly
+        label {
+            label: 乗降客数
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 60
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_REMARKS (
+        type: displayOnly
+        label {
+            label: 備考
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 70
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    pageItem P1_STATION (
+        type: selectOne
+        label {
+            label: 駅を探す
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery: "select s12_001||' — '||s12_002||' · '||s12_003||' ['||feature_id||']' d,feature_id r from nop_passengers where source_sha256='a1938a312fb8c081b2ee6963c9023eeec02870b87a307ea5b3bcc18a029f5987' order by s12_001,s12_002,s12_003,feature_id"
+        }
+        layout {
+            sequence: 20
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+        help {
+            helpText: 駅名を入力し、事業者・路線を確認して候補を選択してください。
+        }
+    )
+
+    pageItem P1_YEAR (
+        type: selectList
+        label {
+            label: データ年度
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery: select to_char(2025-level)||'年度' d,2025-level r from dual connect by level<=14
+            displayNullValue: false
+        }
+        layout {
+            sequence: 10
+            region: @station-controls
+            slot: regionBody
+            columnSpan: 12
+        }
+        appearance {
+            template: @/optional-above
+            templateOptions: #DEFAULT#
+        }
+        default {
+            type: static
+            staticValue: 2024
+        }
+    )
+
+    dynamicAction selection-changed (
+        name: 年度と駅の変更
+        execution {
+            sequence: 10
+        }
+        when {
+            selectionType: items
+            items: [
+                P1_YEAR
+                P1_STATION
+            ]
+        }
+
+        action move-map (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    const lon = apex.item('P1_LON').getValue(), lat = apex.item('P1_LAT').getValue();
+                    if (lon && lat) { const map = apex.region('station-map'); map.setCenter([
+                    Number(lon), Number(lat)
+                    ]); map.setZoomLevel(15); }
+                    ```
+            }
+            execution {
+                sequence: 30
+                fireOnInit: false
+            }
+            clientSideCondition {
+                type: jsExpression
+                javaScriptExpression: !this.data || this.data.source !== 'station-map'
+            }
+        )
+
+        action refresh-map (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @station-map
+            }
+            execution {
+                sequence: 20
+                fireOnInit: false
+            }
+            clientSideCondition {
+                type: jsExpression
+                javaScriptExpression: !this.data || this.data.source !== 'station-map'
+            }
+        )
+
+        action sync-station-label (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    if (this.data && this.data.source === 'station-map') {
+                        const station = apex.item('P1_STATION'), id = station.getValue();
+                        const name = apex.item('P1_NAME').getValue(), line = apex.item('P1_LINE').getValue();
+                        if (id && name) { station.setValue(id, name + ' — ' + line + ' [' + id + ']', true); }
+                    }
+                    ```
+            }
+            execution {
+                sequence: 15
+                fireOnInit: false
+            }
+        )
+
+        action update-details (
+            action: executeServerSideCode
+            settings {
+                plsqlCode:
+                    ```plsql
+                    begin
+                    with stations as (select t.feature_id,t.s12_001 station_name,t.s12_002 operator_name,t.s12_003 line_name,t.geom,case to_number(:P1_YEAR) when 2011 then t.S12_006 when 2012 then t.S12_010 when 2013 then t.S12_014 when 2014 then t.S12_018 when 2015 then t.S12_022 when 2016 then t.S12_026 when 2017 then t.S12_030 when 2018 then t.S12_034 when 2019 then t.S12_038 when 2020 then t.S12_042 when 2021 then t.S12_046 when 2022 then t.S12_050 when 2023 then t.S12_054 when 2024 then t.S12_058 end duplicate_code,case to_number(:P1_YEAR) when 2011 then t.S12_007 when 2012 then t.S12_011 when 2013 then t.S12_015 when 2014 then t.S12_019 when 2015 then t.S12_023 when 2016 then t.S12_027 when 2017 then t.S12_031 when 2018 then t.S12_035 when 2019 then t.S12_039 when 2020 then t.S12_043 when 2021 then t.S12_047 when 2022 then t.S12_051 when 2023 then t.S12_055 when 2024 then t.S12_059 end availability_code,case to_number(:P1_YEAR) when 2011 then t.S12_008 when 2012 then t.S12_012 when 2013 then t.S12_016 when 2014 then t.S12_020 when 2015 then t.S12_024 when 2016 then t.S12_028 when 2017 then t.S12_032 when 2018 then t.S12_036 when 2019 then t.S12_040 when 2020 then t.S12_044 when 2021 then t.S12_048 when 2022 then t.S12_052 when 2023 then t.S12_056 when 2024 then t.S12_060 end remarks,case to_number(:P1_YEAR) when 2011 then t.S12_009 when 2012 then t.S12_013 when 2013 then t.S12_017 when 2014 then t.S12_021 when 2015 then t.S12_025 when 2016 then t.S12_029 when 2017 then t.S12_033 when 2018 then t.S12_037 when 2019 then t.S12_041 when 2020 then t.S12_045 when 2021 then t.S12_049 when 2022 then t.S12_053 when 2023 then t.S12_057 when 2024 then t.S12_061 end passengers_raw from nop_passengers t where source_sha256='a1938a312fb8c081b2ee6963c9023eeec02870b87a307ea5b3bcc18a029f5987') select station_name,operator_name||' · '||line_name,:P1_YEAR||'年度',case when duplicate_code=1 and availability_code=1 then to_char(passengers_raw,'FM999G999G999G990','NLS_NUMERIC_CHARACTERS=''.,''')||' 人／日' when duplicate_code=3 or availability_code=4 then '選択年度に駅なし' when duplicate_code=2 then '他路線駅に記載' when availability_code=2 then 'データなし' when availability_code=3 then '非公開' else '元データの状態コード未定義' end,remarks, sdo_geom.sdo_min_mbr_ordinate(sdo_cs.transform(geom,4326),1),sdo_geom.sdo_min_mbr_ordinate(sdo_cs.transform(geom,4326),2) into :P1_NAME,:P1_LINE,:P1_DATA_YEAR,:P1_PASSENGERS,:P1_REMARKS,:P1_LON,:P1_LAT from stations where feature_id=to_number(:P1_STATION);
+                    exception when no_data_found then
+                    :P1_NAME:='駅を選択してください';:P1_LINE:=null;:P1_DATA_YEAR:=:P1_YEAR||'年度';:P1_PASSENGERS:=null;:P1_REMARKS:=null;:P1_LON:=null;:P1_LAT:=null;
+                    end;
+                    ```
+                itemsToSubmit: [
+                    P1_YEAR
+                    P1_STATION
+                ]
+                itemsToReturn: [
+                    P1_NAME
+                    P1_LINE
+                    P1_DATA_YEAR
+                    P1_PASSENGERS
+                    P1_REMARKS
+                    P1_LON
+                    P1_LAT
+                ]
+            }
+            execution {
+                sequence: 10
+            }
+        )
+
+    )
+
+)
+

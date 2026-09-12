@@ -1,0 +1,85 @@
+page 1 (
+    name: 駅の乗降客数マップ
+    alias: HOME
+    title: 駅の乗降客数マップ
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: [
+            https://unpkg.com/leaflet@1.9.4/dist/leaflet.js
+            #APP_FILES#station-map.js
+        ]
+        executeWhenPageLoads: window.nopInit();
+    }
+    css {
+        fileUrls: [
+            https://unpkg.com/leaflet@1.9.4/dist/leaflet.css
+            #APP_FILES#station-map.css
+        ]
+    }
+    security {
+        authentication: public
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region station-map (
+        name: 駅の乗降客数マップ
+        type: staticContent
+        source {
+            htmlCode:
+                ```html
+                <div class="nop-app">
+                  <aside>
+                    <div class="eyebrow">STATION PASSENGERS · JAPAN</div>
+                    <h1>駅の乗降客数<br>マップ</h1>
+                    <p class="intro">駅の線にカーソルを合わせて、<br>その駅の1日の乗降客数を確認。</p>
+                    <label for="year">データ年度</label><select id="year"></select>
+                    <label for="search">駅を探す</label><input id="search" type="search" placeholder="例：新宿、お台場海浜公園" autocomplete="off">
+                    <div id="results" aria-label="駅の検索結果"></div>
+                    <div id="status" role="status">Oracleのデータを読み込み中…</div>
+                    <div class="legend"><span class="line"></span>乗降客数あり <span class="line muted"></span>数値記載なし</div>
+                    <div class="card" id="details"><span class="small">駅の情報</span><p>地図を拡大すると、駅の線を見つけやすくなります。</p></div>
+                    <footer>出典：<a href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-S12-2024.html" target="_blank" rel="noreferrer">国土交通省 国土数値情報</a>（CC BY 4.0）<br>駅別乗降客数を加工。数値は人／日。<br>事業者によって算出基準が異なります。<br>選択年度に存在しない駅は表示しません。</footer>
+                  </aside>
+                  <main><div id="map" aria-label="駅の線と乗降客数の地図"></div><div class="map-note">駅の線にホバーして表示</div></main>
+                </div>
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    process get-stations (
+        name: GET_STATIONS
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                begin
+                    apex_util.prn(nop_map_api.stations_json(to_number(apex_application.g_x01)), false);
+                end;
+                ```
+        }
+        execution {
+            sequence: 10
+            point: ajaxCallback
+        }
+        advanced {
+            executionMappingIdentifier: 16136991399821327
+        }
+    )
+
+)
+

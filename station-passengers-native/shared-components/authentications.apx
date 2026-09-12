@@ -1,0 +1,18 @@
+authentication oracle-apex-accounts (
+    name: Oracle APEX Accounts
+    type: oracleApexAccounts
+    source {
+        plsqlCode:
+            ```plsql
+            procedure initialize_map is
+            begin
+                apex_util.clear_page_cache(1);
+                apex_util.set_session_state('P1_YEAR', '2024');
+            end initialize_map;
+            ```
+    }
+    loginProcessing {
+        postAuthenticationProcedureName: initialize_map
+    }
+)
+
