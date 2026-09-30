@@ -1,0 +1,32 @@
+installScript openai_responses_api (
+    execution {
+        sequence: 20
+    }
+    script {
+        contentFile: openai-responses-api.sql
+    }
+
+    databaseObject (
+        owner: APEXDEV
+        type: procedure
+        name: OPENAI_RESPONSES_API
+    )
+
+)
+
+installScript table (
+    execution {
+        sequence: 10
+    }
+    script {
+        contentFile: table.sql
+    }
+
+    databaseObject (
+        owner: APEXDEV
+        type: table
+        name: OPENAI_TOOLS
+    )
+
+)
+

@@ -1,0 +1,62 @@
+app OPENAI-RESPONSES-API-WITH-TOOL-CALL (
+    name: OpenAI Responses API
+    logo {
+        type: text
+        text: OpenAI Responses API
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            t-TreeNav--styleA
+            js-navCollapsed--hidden
+        ]
+        list: @ナビゲーション-メニュー
+    }
+    navigationBar {
+        list: @ナビゲーション-バー
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DS
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apexアカウント
+    }
+    sessionStateProtection {
+        checksumSalt: 3189F8149C7EC1DBF343FD4F8951AF1229481F8E7EB40BC2869060C6F57467CD
+    }
+    globalization {
+        primaryLanguage: ja
+    }
+    runtime {
+        allowFeedback: true
+    }
+    advanced {
+        modernizeApp: true
+    }
+
+    substitution APP_NAME (
+        value {
+            staticValue: OpenAI Responses API
+        }
+    )
+
+)
+

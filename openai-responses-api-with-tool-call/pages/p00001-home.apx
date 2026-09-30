@@ -1,0 +1,709 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: OpenAI Responses API
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region annotations (
+        name: Annotations
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select j.type, j.title, j.url, j.start_index, j.end_index
+                from json_table(:P1_ANNOTATIONS, '$[*]'
+                    columns
+                    (
+                        type        varchar2(20)  path '$.type',
+                        title       varchar2(400) path '$.title',
+                        url         varchar2(200) path '$.url',
+                        start_index number        path '$.start_index',
+                        end_index   number        path '$.end_index'
+                    )
+                ) j
+                ```
+        }
+        layout {
+            sequence: 90
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--noPadding
+                t-Region--scrollBody
+            ]
+        }
+        serverSideCondition {
+            type: functionBody
+            plsqlFunctionBody:
+                ```plsql
+                declare
+                    l_array json_array_t;
+                begin
+                    if :P1_ANNOTATIONS is not null then
+                        l_array := json_array_t(:P1_ANNOTATIONS);
+                        if l_array.get_size() > 0 then
+                            return true;
+                        end if;
+                    end if;
+                    return false;
+                end;
+                ```
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--altRowsDefault
+                t-Report--rowHighlight
+            ]
+        }
+        pagination {
+            type: nextAndPreviousLinks
+        }
+
+        column END_INDEX (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: End Index
+                alignment: end
+            }
+            layout {
+                sequence: 50
+                columnAlignment: end
+            }
+        )
+
+        column START_INDEX (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: Start Index
+                alignment: end
+            }
+            layout {
+                sequence: 40
+                columnAlignment: end
+            }
+        )
+
+        column TITLE (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Title
+            }
+            layout {
+                sequence: 20
+            }
+        )
+
+        column TYPE (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Type
+            }
+            layout {
+                sequence: 10
+            }
+        )
+
+        column URL (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Url
+            }
+            layout {
+                sequence: 30
+            }
+        )
+
+    )
+
+    region openai-responses-api (
+        name: OpenAI Responses API
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    pageItem P1_ANNOTATIONS (
+        type: hidden
+        layout {
+            sequence: 110
+            slot: body
+        }
+    )
+
+    pageItem P1_ERROR_CODE (
+        type: textField
+        label {
+            label: Error Code
+            alignment: left
+        }
+        layout {
+            sequence: 150
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_ERROR_MESSAGE (
+        type: textField
+        label {
+            label: Error Message
+            alignment: left
+        }
+        layout {
+            sequence: 160
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_INCOMPLETE_REASON (
+        type: textField
+        label {
+            label: Incomplete Reason
+            alignment: left
+        }
+        layout {
+            sequence: 140
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_INPUT (
+        type: textarea
+        label {
+            label: Input
+            alignment: left
+        }
+        layout {
+            sequence: 50
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+    )
+
+    pageItem P1_INSTRUCTIONS (
+        type: textField
+        label {
+            label: Instructions
+            alignment: left
+        }
+        layout {
+            sequence: 30
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    pageItem P1_MODEL (
+        type: selectList
+        label {
+            label: Model
+            alignment: left
+        }
+        lov {
+            type: staticValues
+            staticValues: STATIC2:gpt-6-astra;gpt-6-astra,gpt-6-sol;gpt-6-sol,gpt-6-luna;gpt-6-luna
+            displayExtraValues: false
+        }
+        layout {
+            sequence: 10
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+    )
+
+    pageItem P1_OUTPUT_TEXT (
+        type: markdownEditor
+        label {
+            label: Output Text
+            alignment: left
+        }
+        layout {
+            sequence: 80
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        sessionState {
+            dataType: clob
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_REFUSAL (
+        type: markdownEditor
+        label {
+            label: Refusal
+            alignment: left
+        }
+        layout {
+            sequence: 120
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        sessionState {
+            dataType: clob
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_RESPONSE_ID (
+        type: textField
+        label {
+            label: Response Id
+            alignment: left
+        }
+        layout {
+            sequence: 20
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+    )
+
+    pageItem P1_STATUS (
+        type: textField
+        label {
+            label: Status
+            alignment: left
+        }
+        layout {
+            sequence: 130
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_SUMMARY_TEXT (
+        type: textarea
+        label {
+            label: Summary Text
+            alignment: left
+        }
+        layout {
+            sequence: 170
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        sessionState {
+            dataType: clob
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    pageItem P1_TOOL_SET (
+        type: selectList
+        label {
+            label: Tool Set
+            alignment: left
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery: select tool_set d, tool_set r from openai_tools group by tool_set
+        }
+        layout {
+            sequence: 40
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+    )
+
+    pageItem P1_USAGE (
+        type: textarea
+        label {
+            label: Usage
+            alignment: left
+        }
+        layout {
+            sequence: 100
+            slot: body
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 30
+            height: 5
+        }
+        readOnly {
+            type: always
+        }
+    )
+
+    button clear (
+        buttonName: CLEAR
+        label: Clear
+        layout {
+            sequence: 70
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--stretch
+            ]
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    button submit (
+        buttonName: SUBMIT
+        label: Submit
+        layout {
+            sequence: 60
+            slot: body
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: [
+                #DEFAULT#
+                t-Button--stretch
+            ]
+        }
+        behavior {
+            showProcessing: true
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    process call-openai-responses-api (
+        name: Call OpenAI Responses API
+        type: invokeApi
+        invoke {
+            type: plsqlProcedureOrFunction
+            procedureOrFunction: OPENAI_RESPONSES_API
+        }
+        execution {
+            sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 48155387774352723
+        }
+        serverSideCondition {
+            whenButtonPressed: @submit
+        }
+
+        parameter p_annotations (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P1_ANNOTATIONS
+            }
+            advanced {
+                displaySequence: 70
+            }
+        )
+
+        parameter p_credential_static_id (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 90
+            }
+        )
+
+        parameter p_endpoint (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: apiDefault
+            }
+            advanced {
+                displaySequence: 80
+            }
+        )
+
+        parameter p_error_code (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P1_ERROR_CODE
+            }
+            advanced {
+                displaySequence: 130
+            }
+        )
+
+        parameter p_error_message (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P1_ERROR_MESSAGE
+            }
+            advanced {
+                displaySequence: 140
+            }
+        )
+
+        parameter p_incomplete_reason (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P1_INCOMPLETE_REASON
+            }
+            advanced {
+                displaySequence: 120
+            }
+        )
+
+        parameter p_input (
+            value {
+                type: item
+                item: P1_INPUT
+            }
+            advanced {
+                displaySequence: 20
+            }
+        )
+
+        parameter p_instructions (
+            value {
+                type: item
+                item: P1_INSTRUCTIONS
+            }
+            advanced {
+                displaySequence: 30
+            }
+        )
+
+        parameter p_model (
+            value {
+                type: item
+                item: P1_MODEL
+            }
+            advanced {
+                displaySequence: 10
+            }
+        )
+
+        parameter p_output_text (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P1_OUTPUT_TEXT
+            }
+            advanced {
+                displaySequence: 40
+            }
+        )
+
+        parameter p_refusal (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P1_REFUSAL
+            }
+            advanced {
+                displaySequence: 100
+            }
+        )
+
+        parameter p_response_id (
+            parameter {
+                direction: inOut
+            }
+            value {
+                item: P1_RESPONSE_ID
+            }
+            advanced {
+                displaySequence: 60
+            }
+        )
+
+        parameter p_status (
+            parameter {
+                direction: out
+            }
+            value {
+                item: P1_STATUS
+            }
+            advanced {
+                displaySequence: 110
+            }
+        )
+
+        parameter p_summary_text (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P1_SUMMARY_TEXT
+            }
+            advanced {
+                displaySequence: 150
+            }
+        )
+
+        parameter p_tool_set (
+            parameter {
+                hasDefault: true
+            }
+            value {
+                type: item
+                item: P1_TOOL_SET
+            }
+            advanced {
+                displaySequence: 160
+            }
+        )
+
+        parameter p_usage (
+            parameter {
+                direction: out
+                dataType: clob
+            }
+            value {
+                item: P1_USAGE
+            }
+            advanced {
+                displaySequence: 50
+            }
+        )
+
+    )
+
+    process clear-session-state (
+        name: Clear Session State
+        type: clearSessionState
+        execution {
+            sequence: 20
+        }
+        advanced {
+            executionMappingIdentifier: 48156807086352738
+        }
+        serverSideCondition {
+            whenButtonPressed: @clear
+        }
+    )
+
+)
+

@@ -1,0 +1,44 @@
+breadcrumb ブレッドクラム (
+    name: ブレッドクラム
+
+    entry ptc-log (
+        name: PTC Log
+        pageNumber: 4
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 4
+            }
+        }
+    )
+
+    entry tool-definitions (
+        name: Tool Definitions
+        pageNumber: 2
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 2
+            }
+        }
+    )
+
+    entry ホーム (
+        name: ホーム
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+)
+

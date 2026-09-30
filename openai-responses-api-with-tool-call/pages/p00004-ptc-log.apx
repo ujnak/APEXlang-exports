@@ -1,0 +1,243 @@
+page 4 (
+    name: PTC Log
+    alias: PTC-LOG
+    title: PTC Log
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region ptc-log (
+        name: PTC Log
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery: select seq_id, c001, c002, c003, c004, c005, clob001 from apex_collections where collection_name = 'PTC_LOG'
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: [
+                #DEFAULT#
+                t-IRR-region--hideHeader js-addHiddenHeadingRoleDesc
+            ]
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: データが見つかりません。
+            whenMoreDataFound: このレポートの最大行数は#MAX_ROW_COUNT#行です。フィルタを適用して、問合せのレコード数を削減してください。
+        }
+        advanced {
+            savedReportMappingIdentifier: 19579651872517364
+        }
+
+        column C001 (
+            type: plainText
+            heading {
+                heading: C001
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column C002 (
+            type: plainText
+            heading {
+                heading: C002
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column C003 (
+            type: plainText
+            heading {
+                heading: C003
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column C004 (
+            type: plainText
+            heading {
+                heading: C004
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column C005 (
+            type: plainText
+            heading {
+                heading: C005
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: STRING
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column CLOB001 (
+            type: plainText
+            heading {
+                heading: Clob001
+            }
+            layout {
+                sequence: 8
+            }
+            columnFormatting {
+                htmlExpression: <pre>#CLOB001#</pre>
+            }
+            source {
+                dataType: CLOB
+            }
+            columnFilter {
+                type: none
+            }
+            advanced {
+                endUserAlias: H
+            }
+            enableUsersTo {
+                hide: false
+                highlight: false
+                controlBreak: false
+                aggregate: false
+                compute: false
+                chart: false
+                groupBy: false
+            }
+        )
+
+        column SEQ_ID (
+            type: plainText
+            heading {
+                heading: Seq Id
+                alignment: end
+            }
+            layout {
+                sequence: 1
+                columnAlignment: end
+            }
+            source {
+                dataType: NUMBER
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        page {
+            borderWidth: 0.5
+            borderColor: #666666
+        }
+
+        savedReport primary (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn C001 (
+                sequence: 2
+            )
+
+            displayColumn C002 (
+                sequence: 3
+            )
+
+            displayColumn C003 (
+                sequence: 4
+            )
+
+            displayColumn C004 (
+                sequence: 5
+            )
+
+            displayColumn C005 (
+                sequence: 6
+            )
+
+            displayColumn CLOB001 (
+                sequence: 7
+            )
+
+            displayColumn SEQ_ID (
+                sequence: 1
+            )
+
+        )
+
+    )
+
+    region ブレッドクラム (
+        name: ブレッドクラム
+        type: breadcrumb
+        source {
+            breadcrumb: @ブレッドクラム
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+)
+
