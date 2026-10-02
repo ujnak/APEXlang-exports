@@ -8,21 +8,13 @@
       "tileSize": 512,
       "maxzoom": 16,
       "attribution": "<a href=\"https://mapterhorn.com/attribution\">© Mapterhorn</a>"
-    },
-    "colorSource": {
-      "type": "raster-dem",
-      "tiles": ["mapterhorn://{z}/{x}/{y}"],
-      "encoding": "terrarium",
-      "tileSize": 512,
-      "maxzoom": 16,
-      "attribution": "<a href=\"https://mapterhorn.com/attribution\">© Mapterhorn</a>"
     }
   },
   "layers": [
     {
       "id": "elevation-color",
       "type": "color-relief",
-      "source": "colorSource",
+      "source": "terrainSource",
       "paint": {
         "color-relief-opacity": 1,
         "color-relief-color": [

@@ -85,9 +85,6 @@ page 1 (
                 t-Region--scrollBody
             ]
         }
-        advanced {
-            htmlDomId: map
-        }
         map {
             background: sharedComponent
             standard: @mapterhorn
@@ -98,12 +95,6 @@ page 1 (
                 infiniteMap
                 rectangleZoom
             ]
-        }
-        initialPositionAndZoom {
-            type: staticValues
-            longitude: 139.7528
-            latitude: 35.6852
-            zoomLevel: 12
         }
         attributes {
             messagesPosition: below
