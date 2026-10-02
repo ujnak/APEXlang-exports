@@ -1,0 +1,252 @@
+page 1 (
+    name: ホーム
+    alias: HOME
+    title: Mapterhorn PMTiles
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    javaScript {
+        fileUrls: https://cdn.jsdelivr.net/npm/pmtiles@4.5.0/dist/pmtiles.min.js
+        executeWhenPageLoads:
+            ```javascript-browser
+            const protocol = new pmtiles.Protocol({
+              metadata: true,
+              errorOnMissingTile: true
+            });
+            
+            maplibregl.addProtocol("mapterhorn", async (params, abortController) => {
+              const [z, x, y] = params.url
+                .replace("mapterhorn://", "")
+                .split("/")
+                .map(Number);
+            
+              const name = z <= 12
+                ? "planet"
+                : `6-${x >> (z - 6)}-${y >> (z - 6)}`;
+            
+              const url =
+                `pmtiles://https://download.mapterhorn.com/${name}.pmtiles/${z}/${x}/${y}.webp`;
+            
+              try {
+                const response = await protocol.tile(
+                  { ...params, url },
+                  abortController
+                );
+            
+                if (response['data'] === null) {
+                  throw new Error(`Tile z=${z} x=${x} y=${y} not found.`);
+                }
+            
+                // console.log("[Mapterhorn 取得成功]", {
+                console.debug("[Mapterhorn 取得成功]", {
+                  z, x, y,
+                  archive: `${name}.pmtiles`
+                });
+            
+                return response;
+             } catch (error) {
+                // キャンセルは警告表示せず、MapLibreへ伝える
+                if (error?.name === "AbortError" ||
+                    abortController.signal.aborted) {
+                  throw error;
+                }
+            
+                console.warn("[Mapterhorn 取得失敗]", {
+                  z, x, y,
+                  archive: `${name}.pmtiles`,
+                  error
+                });
+            
+                throw error;
+              }
+            });
+            ```
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region mapterhorn (
+        name: Mapterhorn
+        type: map
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        advanced {
+            htmlDomId: map
+        }
+        map {
+            background: sharedComponent
+            standard: @mapterhorn
+        }
+        controls {
+            options: [
+                scaleBar
+                infiniteMap
+                rectangleZoom
+            ]
+        }
+        initialPositionAndZoom {
+            type: staticValues
+            longitude: 139.7528
+            latitude: 35.6852
+            zoomLevel: 12
+        }
+        attributes {
+            messagesPosition: below
+        }
+
+        layer dummy (
+            name: Capital
+            layout {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery: select capital_city, lat, lon from pref_capitals
+            }
+            columnMapping {
+                geometryColumnDataType: longitudeLatitude
+                longitudeColumn: LON
+                latitudeColumn: LAT
+            }
+        )
+
+    )
+
+    region mapterhorn-pmtiles (
+        name: Mapterhorn PMTiles
+        type: staticContent
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    dynamicAction 新規 (
+        name: マップの初期化
+        execution {
+            sequence: 10
+        }
+        when {
+            event: region/map/spatialmapinitialized
+            selectionType: region
+            region: @mapterhorn
+        }
+
+        action native-javascript-code (
+            action: executeJsCode
+            settings {
+                jsCode:
+                    ```javascript-browser
+                    const map = apex.region(this.triggeringElement.id).getMapObject();
+                    // map should be initialized because DA is triggered after initialize.
+                    
+                    let previousMax = null;
+                    
+                    function updateElevationColors() {
+                      if (!map.getLayer("elevation-color")) return;
+                    
+                      const terrain = map.getTerrain();
+                      if (!terrain) return;
+                    
+                      const exaggeration = terrain.exaggeration ?? 1;
+                      if (exaggeration <= 0) return;
+                    
+                      const canvas = map.getCanvas();
+                      const width = canvas.clientWidth;
+                      const height = canvas.clientHeight;
+                      if (!width || !height) return;
+                    
+                      // 画面を40×40の格子に分割して標高を調べる
+                      const divisions = 40;
+                      let maxElevation = -Infinity;
+                    
+                      for (let row = 0; row <= divisions; row++) {
+                        for (let col = 0; col <= divisions; col++) {
+                          const point = [
+                            (width - 1) * col / divisions,
+                            (height - 1) * row / divisions
+                          ];
+                    
+                          const lngLat = map.unproject(point);
+                          const elevation = map.queryTerrainElevation(lngLat);
+                    
+                          if (!Number.isFinite(elevation)) continue;
+                    
+                          // queryTerrainElevationには地形の誇張倍率が反映される
+                          const actualElevation = elevation / exaggeration;
+                          maxElevation = Math.max(maxElevation, actualElevation);
+                        }
+                      }
+                    
+                      if (!Number.isFinite(maxElevation)) return;
+                    
+                      // 下限は0m固定。補間の上限は必ず下限より大きくする
+                      const upper = Math.max(1, Math.ceil(maxElevation));
+                    
+                      // スタイル更新によるidleの再発火で更新を繰り返さない
+                      if (upper === previousMax) return;
+                      previousMax = upper;
+                    
+                      map.setPaintProperty(
+                        "elevation-color",
+                        "color-relief-color",
+                        [
+                          "interpolate",
+                          ["linear"],
+                          ["elevation"],
+                          0,            "#0000FF", // 青：0m
+                          upper * 0.25, "#00FFFF", // 水色：最高標高の25%
+                          upper * 0.50, "#00FF00", // 緑：最高標高の50%
+                          upper * 0.75, "#FFFF00", // 黄：最高標高の75%
+                          upper,        "#FF0000"  // 赤：最高標高
+                        ]
+                      );
+                    
+                      console.log("[標高の色分け]", {
+                        青: "0m以下",
+                        赤: `${upper}m以上`,
+                        サンプリング最大標高: maxElevation
+                      });
+                    }
+                    
+                    // 移動・ズームとタイル読み込みが落ち着いたら更新
+                    map.on("idle", updateElevationColors);
+                    
+                    // すでに読み込み済みの場合にも適用
+                    if (map.loaded()) {
+                      updateElevationColors();
+                    }
+                    ```
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)
+

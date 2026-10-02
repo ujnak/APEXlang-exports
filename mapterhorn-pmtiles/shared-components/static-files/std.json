@@ -1,0 +1,45 @@
+{
+  "version": 8,
+  "sources": {
+    "terrainSource": {
+      "type": "raster-dem",
+      "tiles": ["mapterhorn://{z}/{x}/{y}"],
+      "encoding": "terrarium",
+      "tileSize": 512,
+      "maxzoom": 16,
+      "attribution": "<a href=\"https://mapterhorn.com/attribution\">© Mapterhorn</a>"
+    },
+    "colorSource": {
+      "type": "raster-dem",
+      "tiles": ["mapterhorn://{z}/{x}/{y}"],
+      "encoding": "terrarium",
+      "tileSize": 512,
+      "maxzoom": 16,
+      "attribution": "<a href=\"https://mapterhorn.com/attribution\">© Mapterhorn</a>"
+    }
+  },
+  "layers": [
+    {
+      "id": "elevation-color",
+      "type": "color-relief",
+      "source": "colorSource",
+      "paint": {
+        "color-relief-opacity": 1,
+        "color-relief-color": [
+            "interpolate",
+            ["linear"],
+            ["elevation"],
+            0, "#0000FF",
+            75, "#00FFFF",
+            150, "#00FF00",
+            225, "#FFFF00",
+            300, "#FF0000"
+        ]
+      }
+    }
+  ],
+  "terrain": {
+    "source": "terrainSource",
+    "exaggeration": 1.5
+  }
+}
